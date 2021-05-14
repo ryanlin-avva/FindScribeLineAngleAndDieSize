@@ -950,7 +950,7 @@ namespace CsRGBshow
 
             if (c == 0) return -1;
 
-            angle = (float)Math.Acos((dx1 * dx2 + dy1 * dy2) / c);
+            angle = (float)((Math.Acos((dx1 * dx2 + dy1 * dy2) / c))*(180 / Math.PI));//radian To Degree
 
 
             return (second.Y > first.Y) ? angle : -angle;
