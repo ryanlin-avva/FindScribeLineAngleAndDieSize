@@ -9,7 +9,7 @@ namespace CsRGBshow
     //Fast RGB Processing Class
     class FastPixel
     {
-        public int nx, ny; //影像寬與高
+        public int image_width=4024, image_height=4036; //影像寬與高
         public byte[,] array_Red, array_Green, array_Blue; //Red, Green & Blue 陣列
         public byte[,] array_Gray; //灰階陣列
         byte[] array_RGB; //影像的可存取副本資料陣列
@@ -22,7 +22,13 @@ namespace CsRGBshow
                     -1,8,-1,
                     -1,-1,-1,
             };
-
+        public double ratio = 0.1;
+        public double Ratio { get { return ratio; } set {  }}
+        public int minHeight { get { return (int)(image_height * ratio); } }
+        public int maxHeight { get { return (int)(image_height * (1 - ratio)); } }
+        public int minWidth { get { return (int)(image_width * ratio); } }
+        public int maxWidth { get { return (int)(image_width * (1 - ratio)); } }
+      
 
 
         //鎖定點陣圖(Bitmap)物件的記憶體位置，建立一個可操作的位元組陣列副本
@@ -49,15 +55,15 @@ namespace CsRGBshow
         //取得RGB陣列
         public void Bmp2RGB(Bitmap bmp)
         {
-            nx = bmp.Width; ny = bmp.Height; //影像寬高
-            array_Red = new byte[nx, ny]; array_Green = new byte[nx, ny]; array_Blue = new byte[nx, ny]; //RGB
+            image_width = bmp.Width; image_height = bmp.Height; //影像寬高
+            array_Red = new byte[image_width, image_height]; array_Green = new byte[image_width, image_height]; array_Blue = new byte[image_width, image_height]; //RGB
             LockBMP(bmp);
             if(bmp.PixelFormat == PixelFormat.Format8bppIndexed)
             {
-                for (int j = 0; j < ny; j++)
+                for (int j = 0; j < image_height; j++)
                 {
                     int Lj = j * D.Stride;
-                    for (int i = 0; i < nx; i++)
+                    for (int i = 0; i < image_width; i++)
                     {
                         int k = Lj + i * nB;
                        
@@ -68,10 +74,10 @@ namespace CsRGBshow
             }
             if (bmp.PixelFormat == PixelFormat.Format24bppRgb)
             {
-                for (int j = 0; j < ny; j++)
+                for (int j = 0; j < image_height; j++)
                 {
                     int Lj = j * D.Stride;
-                    for (int i = 0; i < nx; i++)
+                    for (int i = 0; i < image_width; i++)
                     {
                         int k = Lj + i * nB;
                         array_Red[i, j] = array_RGB[k + 2]; //Red
@@ -83,10 +89,10 @@ namespace CsRGBshow
             }
             if (bmp.PixelFormat == PixelFormat.Format32bppRgb)
             {
-                for (int j = 0; j < ny; j++)
+                for (int j = 0; j < image_height; j++)
                 {
                     int Lj = j * D.Stride;
-                    for (int i = 0; i < nx; i++)
+                    for (int i = 0; i < image_width; i++)
                     {
                         int k = Lj + i * nB;
                         array_Red[i, j] = array_RGB[k + 2]; //Red

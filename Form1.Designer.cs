@@ -40,6 +40,7 @@
             this.FilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.equalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.laplaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -48,7 +49,6 @@
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
-            this.laplaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -137,6 +137,13 @@
             this.BinaryToolStripMenuItem.Text = "Binary";
             this.BinaryToolStripMenuItem.Click += new System.EventHandler(this.BinaryToolStripMenuItem_Click);
             // 
+            // laplaceToolStripMenuItem
+            // 
+            this.laplaceToolStripMenuItem.Name = "laplaceToolStripMenuItem";
+            this.laplaceToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
+            this.laplaceToolStripMenuItem.Text = "Laplace";
+            this.laplaceToolStripMenuItem.Click += new System.EventHandler(this.laplaceToolStripMenuItem_Click);
+            // 
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
@@ -200,15 +207,8 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(65, 22);
             this.textBox3.TabIndex = 10;
-            this.textBox3.Text = "4";
+            this.textBox3.Text = "8";
             this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
-            // 
-            // laplaceToolStripMenuItem
-            // 
-            this.laplaceToolStripMenuItem.Name = "laplaceToolStripMenuItem";
-            this.laplaceToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
-            this.laplaceToolStripMenuItem.Text = "Laplace";
-            this.laplaceToolStripMenuItem.Click += new System.EventHandler(this.laplaceToolStripMenuItem_Click);
             // 
             // Form1
             // 

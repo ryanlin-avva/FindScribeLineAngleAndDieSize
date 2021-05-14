@@ -22,7 +22,7 @@ namespace CsRGBshow
         int Gdim_width = 4;
         int Gdim_height = 4; //計算區域亮度區塊的寬與高
         int[,] Th; //每一區塊的平均亮度，二值化門檻值
-        int minHeight = 1450, maxHeight = 1000, minWidth = 1450, maxWidth = 1000;
+       
         ArrayList C; //目標物件集合
         Bitmap Mb; //底圖副本
         FastPixel f = new FastPixel(); //宣告快速繪圖物件
@@ -50,13 +50,13 @@ namespace CsRGBshow
             int Offset = int.Parse(textBox1.Text);
             Gdim_width = int.Parse(textBox2.Text);
             Gdim_height = int.Parse(textBox2.Text);
-            array_Binary = new byte[f.nx, f.ny];
+            array_Binary = new byte[f.image_width, f.image_height];
             if (radioButton1.Checked)
             {
-                for (int i = 1; i < f.nx - 1; i++)
+                for (int i = 1; i < f.image_width - 1; i++)
                 {
                     int x = i / Gdim_width;
-                    for (int j = 1; j < f.ny - 1; j++)
+                    for (int j = 1; j < f.image_height - 1; j++)
                     {
                         int y = j / Gdim_height;
                         if (f.array_Green[i, j] < Th[x, y] + Offset)//Th[x, y]
@@ -68,10 +68,10 @@ namespace CsRGBshow
             }
             if (radioButton2.Checked)
             {
-                for (int i = 1; i < f.nx - 1; i++)
+                for (int i = 1; i < f.image_width - 1; i++)
                 {
                     int x = i / Gdim_width;
-                    for (int j = 1; j < f.ny - 1; j++)
+                    for (int j = 1; j < f.image_height - 1; j++)
                     {
                         int y = j / Gdim_height;
                         if (f.array_Green[i, j] > Th[x, y] - Offset)//Th[x, y]
@@ -90,13 +90,13 @@ namespace CsRGBshow
         {
             Gdim_width = int.Parse(textBox2.Text);
             Gdim_height = int.Parse(textBox2.Text);
-            int kx = f.nx / Gdim_width, ky = f.ny / Gdim_height;
+            int kx = f.image_width / Gdim_width, ky = f.image_height / Gdim_height;
             Th = new int[kx, ky];
             //累計各區塊亮度值總和
-            for (int i = 0; i < f.nx; i++)
+            for (int i = 0; i < f.image_width; i++)
             {
                 int x = i / Gdim_width;
-                for (int j = 0; j < f.ny; j++)
+                for (int j = 0; j < f.image_height; j++)
                 {
                     int y = j / Gdim_height;
                     Th[x, y] += f.array_Green[i, j];
@@ -127,10 +127,10 @@ namespace CsRGBshow
         //建立輪廓點陣列
         private byte[,] GetLine(byte[,] b)
         {
-            byte[,] Q = new byte[f.nx, f.ny];
-            for (int i = 2; i < f.nx - 2; i++)
+            byte[,] Q = new byte[f.image_width, f.image_height];
+            for (int i = 2; i < f.image_width - 2; i++)
             {
-                for (int j = 2; j < f.ny - 2; j++)
+                for (int j = 2; j < f.image_height - 2; j++)
                 {
                     if (b[i, j] == 1 && b[i - 1, j] == 1 && b[i + 1, j] == 1 && b[i, j - 1] == 1 && b[i, j + 1] == 1 && b[i - 1, j - 1] == 1 && b[i - 1, j + 1] == 1 && b[i + 1, j - 1] == 1 && b[i + 1, j + 1] == 1
                         /*&& b[i - 2, j + 2] == 1 && b[i - 1, j + 2] == 1 && b[i, j + 2] == 1 && b[i + 1, j + 2] == 1 && b[i + 2, j + 2] == 1 && b[i - 2, j + 1] == 1 && b[i + 2, j + 1] == 1 && b[i - 2, j] == 1 && b[i + 2, j] == 1 && b[i - 2, j - 1] == 1 && b[i + 2, j - 1] == 1 && b[i - 2, j - 2] == 1 && b[i - 1, j - 2] == 1 && b[i, j - 2] == 1 && b[i + 1, j - 2] == 1 && b[i + 2, j - 2] == 1*/)
@@ -146,11 +146,11 @@ namespace CsRGBshow
         //建立切割道陣列
         private byte[,] GetScribeLine(byte[,] b)
         {
-            byte[,] Q = new byte[f.nx, f.ny];
+            byte[,] Q = new byte[f.image_width, f.image_height];
             int offset = int.Parse(textBox3.Text);
-            for (int i = 1; i < f.nx - 1; i++)
+            for (int i = 1; i < f.image_width - 1; i++)
             {
-                for (int j = 1; j < f.ny - 1; j++)
+                for (int j = 1; j < f.image_height - 1; j++)
                 {
                     if ((-offset < b[i - 1, j] - b[i, j] && b[i - 1, j] - b[i, j] < offset) &&
                         (-offset < b[i + 1, j] - b[i, j] && b[i + 1, j] - b[i, j] < offset) &&
@@ -171,10 +171,10 @@ namespace CsRGBshow
         #region Outline
         private byte[,] Outline(byte[,] b)
         {
-            byte[,] Q = new byte[f.nx, f.ny];
-            for (int i = 1; i < f.nx - 1; i++)
+            byte[,] Q = new byte[f.image_width, f.image_height];
+            for (int i = 1; i < f.image_width - 1; i++)
             {
-                for (int j = 1; j < f.ny - 1; j++)
+                for (int j = 1; j < f.image_height - 1; j++)
                 {
                     if (b[i, j] == 0) continue;
                     if (b[i - 1, j] == 0) { Q[i, j] = 1; continue; }
@@ -189,7 +189,7 @@ namespace CsRGBshow
         #region equalToolStripMenuItem_Click
         private void equalToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            byte[,] Q = new byte[f.nx, f.ny];
+            byte[,] Q = new byte[f.image_width, f.image_height];
             Q = HistogramEqualization(f.array_Green, getGrayHistogram(f.image));
             pictureBox1.Image = f.GrayImg(Q);
         }
@@ -219,10 +219,10 @@ namespace CsRGBshow
         #region HistogramEqualization
         private byte[,] HistogramEqualization(byte[,] b, double[] density)
         {
-            byte[,] Q = new byte[f.nx, f.ny];
-            for (int j = 0; j < f.ny; j++)
+            byte[,] Q = new byte[f.image_width, f.image_height];
+            for (int j = 0; j < f.image_height; j++)
             {
-                for (int i = 0; i < f.nx; i++)
+                for (int i = 0; i < f.image_width; i++)
                 {
                     double densitySum = 0;
                     int value = b[i, j];
@@ -248,11 +248,13 @@ namespace CsRGBshow
             for (int k = 0; k < C.Count; k++)
             {
                 TgInfo T = (TgInfo)C[k];
-                if (T.height < minHeight && T.width < minWidth) continue;
+                //if (T.height < f.minHeight && T.width < f.minWidth) continue;
                 //if (T.height > maxHeight) continue;
                 //if () continue;
                 //if (T.width > maxWidth) continue;
-                D.Add(T);
+                if (T.height > f.maxHeight && T.width > f.maxWidth) D.Add(T);
+                if (T.height > f.maxHeight && T.width < f.minWidth) D.Add(T);
+                if (T.height < f.minHeight && T.width > f.maxWidth) D.Add(T);
             }
 
             C = D;
@@ -275,7 +277,7 @@ namespace CsRGBshow
             }
             #endregion
             //繪製目標輪廓點
-            Bitmap bmp = new Bitmap(f.nx, f.ny);
+            Bitmap bmp = new Bitmap(f.image_width, f.image_height);
             for (int k = 0; k < C.Count; k++)
             {
                 TgInfo T = (TgInfo)C[k];
@@ -295,9 +297,9 @@ namespace CsRGBshow
         {
             ArrayList A = new ArrayList();
             byte[,] b = (byte[,])q.Clone();//建立輪廓點陣列副本
-            for (int i = 1; i < f.nx - 1; i++)
+            for (int i = 1; i < f.image_width - 1; i++)
             {
-                for (int j = 1; j < f.ny - 1; j++)
+                for (int j = 1; j < f.image_height - 1; j++)
                 {
                     if (b[i, j] == 0) continue;
                     TgInfo G = new TgInfo();
@@ -672,7 +674,7 @@ namespace CsRGBshow
                     listBox1.Items.Add(show);
 
                     //繪製有效目標
-                    Bitmap bmp = new Bitmap(f.nx, f.ny);
+                    Bitmap bmp = new Bitmap(f.image_width, f.image_height);
                     for (int m = 0; m < T.P.Count; m++)
                     {
                         Point p = (Point)T.P[m];
@@ -709,7 +711,7 @@ namespace CsRGBshow
                     listBox1.Items.Add(show);
 
                     //繪製有效目標
-                    Bitmap bmp = new Bitmap(f.nx, f.ny);
+                    Bitmap bmp = new Bitmap(f.image_width, f.image_height);
                     for (int m = 0; m < T.P.Count; m++)
                     {
                         Point p = (Point)T.P[m];
@@ -766,7 +768,7 @@ namespace CsRGBshow
                     show = "Height=" + FindDieSize(centerpoint_list, Hor_Line.Count, Ver_Line.Count, 440, 400)[1].ToString();
                     listBox1.Items.Add(show);
                     //繪製有效目標
-                    Bitmap bmp = new Bitmap(f.nx, f.ny);
+                    Bitmap bmp = new Bitmap(f.image_width, f.image_height);
                     for (int m = 0; m < T.P.Count; m++)
                     {
                         Point p = (Point)T.P[m];
@@ -1038,9 +1040,9 @@ namespace CsRGBshow
         //負片
         private byte[,] Negative(byte[,] b)
         {
-            for (int i = 0; i < f.nx; i++)
+            for (int i = 0; i < f.image_width; i++)
             {
-                for (int j = 0; j < f.ny; j++)
+                for (int j = 0; j < f.image_height; j++)
                 {
                     b[i, j] = (byte)(255 - b[i, j]);
                 }
@@ -1051,7 +1053,7 @@ namespace CsRGBshow
         #region Fill
         private byte[,] Fill(List<Point> a)
         {
-            Tbin = new byte[f.nx, f.ny];//選取目標的二值化陣列
+            Tbin = new byte[f.image_width, f.image_height];//選取目標的二值化陣列
             for (int n = 0; n < a.Count; n++)
             {
                 Point p = (Point)a[n];
