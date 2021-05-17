@@ -402,7 +402,7 @@ namespace CsRGBshow
             string show = null;
             float angle_Average = 0;
             listBox1.Items.Clear();
-            for (int k = 0; k < 1; k++)
+            for (int k = 0; k < C.Count; k++)
             {
                 TgInfo T = (TgInfo)C[k];
                 T.left_point_list = new List<Point>();
@@ -423,19 +423,19 @@ namespace CsRGBshow
                 for (int m = 0; m < T.P.Count; m++)
                 {
                     Point p = (Point)T.P[m];
-                    if (p.X == T.xmn || p.X == T.xmn + 1)
+                    if (p.X == 1 || p.X == 2 )
                     {
                         T.left_point_list.Add(p);
                     }
-                    if (p.X == T.xmx || p.X == T.xmx - 1)
+                    if (p.X == f.image_width - 1 || p.X == f.image_width - 2)
                     {
                         T.right_point_list.Add(p);
                     }
-                    if (p.Y == T.ymn || p.Y == T.ymn + 1)
+                    if (p.Y == 1 || p.Y == 2 )
                     {
                         T.top_point_list.Add(p);
                     }
-                    if (p.Y == T.ymx || p.Y == T.ymx - 1)
+                    if (p.Y == f.image_height-1 || p.Y == f.image_height - 2)
                     {
                         T.down_point_list.Add(p);
                     }
@@ -617,7 +617,7 @@ namespace CsRGBshow
                                 error_point = error_point + 1;
                             }
                         }
-                        if (error_point < 200)
+                        if (error_point < f.minWidth)
                         {
                             Point_Set.Add(T.left_centerpoint_list[w]);
                             Point_Set.Add(T.right_centerpoint_list[s]);
@@ -644,7 +644,7 @@ namespace CsRGBshow
                                 error_point = error_point + 1;
                             }
                         }
-                        if (error_point < 200)
+                        if (error_point < f.minHeight)
                         {
                             Point_Set.Add(T.top_centerpoint_list[w]);
                             Point_Set.Add(T.down_centerpoint_list[s]);

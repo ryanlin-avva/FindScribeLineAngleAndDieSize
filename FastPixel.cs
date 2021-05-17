@@ -22,7 +22,7 @@ namespace CsRGBshow
                     -1,8,-1,
                     -1,-1,-1,
             };
-        public double ratio = 0.1;
+        public double ratio = 0.15;
         public double Ratio { get { return ratio; } set {  }}
         public int minHeight { get { return (int)(image_height * ratio); } }
         public int maxHeight { get { return (int)(image_height * (1 - ratio)); } }
