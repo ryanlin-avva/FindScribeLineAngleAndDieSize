@@ -766,6 +766,8 @@ namespace CsRGBshow
                     show = "Width=" + FindDieSize(centerpoint_list, Hor_Line.Count, Ver_Line.Count,440,400)[0].ToString();
                     listBox1.Items.Add(show);
                     show = "Height=" + FindDieSize(centerpoint_list, Hor_Line.Count, Ver_Line.Count, 440, 400)[1].ToString();
+                    show = "距離中心最近點X距離=" + GetNearestIntersectPointToCenterDistance(centerpoint_list)[0].ToString()
+                        +",Y距離=" + GetNearestIntersectPointToCenterDistance(centerpoint_list)[1].ToString();
                     listBox1.Items.Add(show);
                     //繪製有效目標
                     Bitmap bmp = new Bitmap(f.image_width, f.image_height);
@@ -1068,6 +1070,26 @@ namespace CsRGBshow
                 Tbin[p.X - 1, p.Y - 1] = 1;
             }
             return Tbin;
+        }
+        #endregion
+        #region GetNearestIntersectPointToCenterDistance
+        public int[] GetNearestIntersectPointToCenterDistance(List<List<Point>> intersect_list)
+        {
+            int[] PointToCenterXYinPixel = { 0, 0 };
+            double PointToCenterDistance = Math.Sqrt(f.image_width * f.image_width + f.image_height * f.image_height);
+            Point CenterPoint = new Point(f.image_width / 2, f.image_height / 2);
+            Point NearestCenterPoint = CenterPoint;
+            for (int i = 0; i < intersect_list.Count; i++)
+            {
+                if (TwoPointFindDistance(intersect_list[i][0], CenterPoint) < PointToCenterDistance)
+                {
+                    PointToCenterDistance = TwoPointFindDistance(intersect_list[i][0], CenterPoint);
+                    NearestCenterPoint = intersect_list[i][0];
+                }
+            }
+            PointToCenterXYinPixel[0] = CenterPoint.X - NearestCenterPoint.X;
+            PointToCenterXYinPixel[1] = CenterPoint.Y - NearestCenterPoint.Y;
+            return PointToCenterXYinPixel;
         }
         #endregion
     }
