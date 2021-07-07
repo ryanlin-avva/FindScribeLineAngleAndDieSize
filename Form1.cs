@@ -116,7 +116,6 @@ namespace CsRGBshow
         //輪廓線
         private void OutlineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //array_Outline = Outline(/*GetLine(GetLine(*/GetLine(array_Binary)/*))*/);
             //array_Outline = GetLine(array_Binary);
             array_Outline = GetScribeLine(f.array_Green);
             //array_Outline = GetScribeLine(HistogramEqualization(f.array_Green, getGrayHistogram(f.image)));
@@ -146,6 +145,7 @@ namespace CsRGBshow
         //建立切割道陣列
         private byte[,] GetScribeLine(byte[,] b)
         {
+            //Q:輪廓線陣列
             byte[,] Q = new byte[f.image_width, f.image_height];
             int offset = int.Parse(textBox3.Text);
             for (int i = 1; i < f.image_width - 1; i++)
@@ -780,10 +780,10 @@ namespace CsRGBshow
                     Graphics g = Graphics.FromImage(bmp);
                     for (int i = 0; i < centerpoint_list.Count; i++)
                     {
-                        g.DrawLine(new Pen(Color.Red), centerpoint_list[i][0], new Point(centerpoint_list[i][0].X + 20, centerpoint_list[i][0].Y));
-                        g.DrawLine(new Pen(Color.Red), centerpoint_list[i][0], new Point(centerpoint_list[i][0].X - 20, centerpoint_list[i][0].Y));
-                        g.DrawLine(new Pen(Color.Red), centerpoint_list[i][0], new Point(centerpoint_list[i][0].X, centerpoint_list[i][0].Y + 20));
-                        g.DrawLine(new Pen(Color.Red), centerpoint_list[i][0], new Point(centerpoint_list[i][0].X, centerpoint_list[i][0].Y - 20));
+                        g.DrawLine(new Pen(Color.Yellow, 5), centerpoint_list[i][0], new Point(centerpoint_list[i][0].X + 20, centerpoint_list[i][0].Y));
+                        g.DrawLine(new Pen(Color.Yellow, 5), centerpoint_list[i][0], new Point(centerpoint_list[i][0].X - 20, centerpoint_list[i][0].Y));
+                        g.DrawLine(new Pen(Color.Yellow, 5), centerpoint_list[i][0], new Point(centerpoint_list[i][0].X, centerpoint_list[i][0].Y + 20));
+                        g.DrawLine(new Pen(Color.Yellow, 5), centerpoint_list[i][0], new Point(centerpoint_list[i][0].X, centerpoint_list[i][0].Y - 20));
                     }
                     pictureBox1.Image = bmp;
                     Mb = (Bitmap)bmp.Clone();
