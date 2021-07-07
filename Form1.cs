@@ -45,11 +45,22 @@ namespace CsRGBshow
         //二值化
         private void BinaryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //array_Gray = Negative(array_Gray);
-            Th = ThresholdBuild(f.array_Gray); //門檻值陣列建立
-            int Offset = int.Parse(textBox1.Text);
+            Th = ThresholdBuild(f.array_Gray); //Th:門檻值陣列
             Gdim_width = int.Parse(textBox2.Text);
             Gdim_height = int.Parse(textBox2.Text);
+            byte[,] A = new byte[f.image_width, f.image_height];
+            for (int i = 0; i < f.image_width; i++)
+            {
+                int x = i / Gdim_width;
+                for (int j = 0; j < f.image_height; j++)
+                {
+                    int y = j / Gdim_width;
+                    A[i, j] = (byte)Th[x, y];
+                }
+            }
+            pictureBox1.Image = f.GrayImg(A);
+            return;
+            int Offset = int.Parse(textBox1.Text);
             array_Binary = new byte[f.image_width, f.image_height];
             if (radioButton1.Checked)
             {
@@ -90,7 +101,8 @@ namespace CsRGBshow
         {
             Gdim_width = int.Parse(textBox2.Text);
             Gdim_height = int.Parse(textBox2.Text);
-            int kx = f.image_width / Gdim_width, ky = f.image_height / Gdim_height;
+            int kx = f.image_width / Gdim_width + 1;
+            int ky = f.image_height / Gdim_height + 1;
             Th = new int[kx, ky];
             //累計各區塊亮度值總和
             for (int i = 0; i < f.image_width; i++)
@@ -120,7 +132,7 @@ namespace CsRGBshow
             //array_Outline = GetLine(array_Binary);
             array_Outline = GetScribeLine(f.array_Green);
             //array_Outline = GetScribeLine(HistogramEqualization(f.array_Green, getGrayHistogram(f.image)));
-            pictureBox1.Image = f.BWImg(array_Outline);
+            pictureBox1.Image = f.BWImg(Outline(array_Outline));
         }
         #endregion
         #region GetLine
@@ -146,26 +158,39 @@ namespace CsRGBshow
         //建立切割道陣列
         private byte[,] GetScribeLine(byte[,] b)
         {
-            byte[,] Q = new byte[f.image_width, f.image_height];
-            int offset = int.Parse(textBox3.Text);
+            byte[,] Z = new byte[f.image_width, f.image_height];
             for (int i = 1; i < f.image_width - 1; i++)
             {
+                int x = i / Gdim_width;
                 for (int j = 1; j < f.image_height - 1; j++)
                 {
-                    if ((-offset < b[i - 1, j] - b[i, j] && b[i - 1, j] - b[i, j] < offset) &&
-                        (-offset < b[i + 1, j] - b[i, j] && b[i + 1, j] - b[i, j] < offset) &&
-                        (-offset < b[i, j - 1] - b[i, j] && b[i, j - 1] - b[i, j] < offset) &&
-                        (-offset < b[i, j + 1] - b[i, j] && b[i, j + 1] - b[i, j] < offset) &&
-                        (-offset < b[i - 1, j - 1] - b[i, j] && b[i - 1, j - 1] - b[i, j] < offset) &&
-                        (-offset < b[i - 1, j + 1] - b[i, j] && b[i - 1, j + 1] - b[i, j] < offset) &&
-                        (-offset < b[i + 1, j - 1] - b[i, j] && b[i + 1, j - 1] - b[i, j] < offset) &&
-                        (-offset < b[i + 1, j + 1] - b[i, j] && b[i + 1, j + 1] - b[i, j] < offset))
-                    {
-                        Q[i, j] = 1;
-                    }
+                    int y = j / Gdim_height;
+                    if (b[i, j] < Th[x, y]) Z[i, j] = 1;
                 }
             }
+            return Z;
+            /*
+                byte[,] Q = new byte[f.image_width, f.image_height];
+                int offset = int.Parse(textBox3.Text);
+                for (int i = 1; i < f.image_width - 1; i++)
+                {
+                    for (int j = 1; j < f.image_height - 1; j++)
+                    {
+                        if ((-offset < b[i - 1, j] - b[i, j] && b[i - 1, j] - b[i, j] < offset) &&
+                            (-offset < b[i + 1, j] - b[i, j] && b[i + 1, j] - b[i, j] < offset) &&
+                            (-offset < b[i, j - 1] - b[i, j] && b[i, j - 1] - b[i, j] < offset) &&
+                            (-offset < b[i, j + 1] - b[i, j] && b[i, j + 1] - b[i, j] < offset) &&
+                            (-offset < b[i - 1, j - 1] - b[i, j] && b[i - 1, j - 1] - b[i, j] < offset) &&
+                            (-offset < b[i - 1, j + 1] - b[i, j] && b[i - 1, j + 1] - b[i, j] < offset) &&
+                            (-offset < b[i + 1, j - 1] - b[i, j] && b[i + 1, j - 1] - b[i, j] < offset) &&
+                            (-offset < b[i + 1, j + 1] - b[i, j] && b[i + 1, j + 1] - b[i, j] < offset))
+                        {
+                            Q[i, j] = 1;
+                        }
+                    }
+                }
             return Q;
+                  */
         }
         #endregion
         #region Outline
