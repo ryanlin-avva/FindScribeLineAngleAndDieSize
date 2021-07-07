@@ -72,7 +72,7 @@ namespace CsRGBshow
                 }
 
             }
-            if (bmp.PixelFormat == PixelFormat.Format24bppRgb)
+            else
             {
                 for (int j = 0; j < image_height; j++)
                 {
@@ -86,22 +86,7 @@ namespace CsRGBshow
                     }
                 }
 
-            }
-            if (bmp.PixelFormat == PixelFormat.Format32bppRgb)
-            {
-                for (int j = 0; j < image_height; j++)
-                {
-                    int Lj = j * D.Stride;
-                    for (int i = 0; i < image_width; i++)
-                    {
-                        int k = Lj + i * nB;
-                        array_Red[i, j] = array_RGB[k + 2]; //Red
-                        array_Green[i, j] = array_RGB[k + 1]; //Green
-                        array_Blue[i, j] = array_RGB[k]; //Blue
-                    }
-                }
-
-            }
+            }           
             UnLockBMP(bmp);
         }
 
