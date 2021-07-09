@@ -244,19 +244,16 @@ namespace CsRGBshow
             ArrayList D = new ArrayList();
             C = getTargets(array_Outline); //建立目標物件集合
             listBox1.Items.Clear();
+
             #region 過濾長寬不夠之物件
             for (int k = 0; k < C.Count; k++)
             {
                 TgInfo T = (TgInfo)C[k];
-                //if (T.height < f.minHeight && T.width < f.minWidth) continue;
-                //if (T.height > maxHeight) continue;
-                //if () continue;
-                //if (T.width > maxWidth) continue;
                 if (T.height > f.maxHeight && T.width > f.maxWidth) D.Add(T);
                 if (T.height > f.maxHeight && T.width < f.minWidth) D.Add(T);
                 if (T.height < f.minHeight && T.width > f.maxWidth) D.Add(T);
             }
-
+            
             C = D;
             //依長寬排序
             for (int i = 0; i < 10; i++)
@@ -888,7 +885,6 @@ namespace CsRGBshow
                y=mx+b             
             */
             float m = 0, b = 0;
-            int y = 0;
             m = (Point2.Y - Point1.Y) / (Point2.X - Point1.X);
             b = Point1.Y - m * Point1.X;
             if (float.IsInfinity(m))
@@ -912,7 +908,6 @@ namespace CsRGBshow
                y=mx+b             
             */
             float m = 0, b = 0;
-            int x = 0;
             if (Point2.X == Point1.X)
             {
                 return new PointF(Point1.X, y);
@@ -1092,5 +1087,370 @@ namespace CsRGBshow
             return PointToCenterXYinPixel;
         }
         #endregion
+
+        private void regionMarkToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ArrayList D = new ArrayList();
+            C = getTargets(array_Outline); //建立目標物件集合
+            listBox1.Items.Clear();
+
+            #region 過濾長寬不夠之物件
+            for (int k = 0; k < C.Count; k++)
+            {
+                TgInfo T = (TgInfo)C[k];
+                if (T.height > f.maxHeight || T.width > f.maxWidth) D.Add(T);
+            }
+            if (D.Count == 0)
+            {
+                MessageBox.Show("找不到符合長度的切割道");
+            }
+            else
+            {
+                C = D;
+            }
+            #endregion
+            //繪製目標輪廓點
+            Bitmap bmp = new Bitmap(f.image_width, f.image_height);
+            pictureBox1.Image = bmp;
+            Color[] colors = { Color.Red, Color.Blue, Color.Green, Color.Brown, Color.Orange, Color.SkyBlue, Color.LightCoral };
+            int reg_cnt = 0;
+            for (int k = 0; k < C.Count; k++)
+            {
+                TgInfo T = (TgInfo)C[k];
+                if (T.P.Count > 10000)
+                {
+                    if (reg_cnt >= colors.Length) reg_cnt = 0;
+                    Console.WriteLine("C[" + k.ToString() + "]=" + T.P.Count.ToString());
+                    for (int m = 0; m < T.P.Count; m++)
+                    {
+                        System.Drawing.Point p = (System.Drawing.Point)T.P[m];
+                        bmp.SetPixel(p.X, p.Y, colors[reg_cnt]);
+                    }
+                    reg_cnt++;
+                }
+            }
+            listBox1.Items.Add("物件數量" + C.Count.ToString());
+            pictureBox1.Image = bmp;
+        }
+        readonly int _left = 0;
+        readonly int _right = 1;
+        readonly int _upper = 2;
+        readonly int _lower = 3;
+        readonly int boundary_num = 4;
+        ProjSorter[] boundary;
+
+        private void scribeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            boundary = new ProjSorter[boundary_num];
+            boundary[_left] = new ProjSorter(1, 3);
+            boundary[_right] = new ProjSorter(f.image_width - 4, f.image_width - 2);
+            boundary[_upper] = new ProjSorter(1, 3);
+            boundary[_lower] = new ProjSorter(f.image_height - 4, f.image_height - 2);
+
+            bool[] need_set = { true, true, true, true };
+            FindEndPoint(need_set);
+            bool redo = false;
+            for (int i=0; i<boundary_num; i++)
+            {
+                Console.WriteLine("Boundary " + i.ToString());
+                boundary[i].Trim();
+                if (boundary[i].NeedReAdd)
+                {
+                    redo = true;
+                    boundary[i].EnlargeRange();
+                }
+                need_set[i] = boundary[i].NeedReAdd;
+            }
+            if (redo)
+            {
+                FindEndPoint(need_set);
+                redo = false;
+                for (int i = 0; i < boundary_num; i++)
+                {
+                    boundary[i].Trim();
+                    if (boundary[i].NeedReAdd)
+                        redo = true;
+                }
+            }
+            if (redo)
+            {
+                MessageBox.Show("找不到適當的切割道");
+                return;
+            }
+            for (int i = 0; i < 4; i+=2)
+            {
+                if (boundary[i].LineCount != boundary[i+1].LineCount)
+                    boundary[i].Adjust(boundary[i+1]);
+            }
+            //繪製目標輪廓點
+            Bitmap bmp = new Bitmap(f.image_width, f.image_height);
+            Graphics g = Graphics.FromImage(bmp);
+            for (int i = 0; i < boundary[_upper].LineCount; i++)
+            {
+                g.DrawLine(new Pen(Color.YellowGreen, 5)
+                            ,0 , boundary[_upper].Lines[i].Mid
+                            , f.image_width - 1, boundary[_lower].Lines[i].Mid);
+            }
+            for (int i = 0; i < boundary[_right].LineCount; i++)
+            {
+                g.DrawLine(new Pen(Color.YellowGreen, 5)
+                            , boundary[_left].Lines[i].Mid, 0
+                            , boundary[_right].Lines[i].Mid, f.image_height - 1);
+            }
+            pictureBox1.Image = bmp;
+        }
+        private void FindEndPoint(bool[] need_set)
+        {
+            for (int i=0; i<boundary_num; i++)
+            {
+                boundary[i].Clear();
+            }
+            for (int k = 0; k < C.Count; k++)
+            {
+                TgInfo T = (TgInfo)C[k];
+                for (int m = 0; m < T.P.Count; m++)
+                {
+                    Point p = (Point)T.P[m];
+                    for (int i = 0; i < 2; i++)
+                    {
+                        if (need_set[i]) boundary[i].SetInRange(p.Y, p.X);
+                        if (need_set[i + 2]) boundary[i + 2].SetInRange(p.X, p.Y);
+                    }
+                }
+            }
+
+        }
+    }
+
+    class ProjSorter
+    {
+        public ProjSorter(int begin, int end)
+        {
+            AssoPosBegin = begin;
+            AssoPosEnd = end;
+        }
+        List<int> values = new List<int>();
+        List<LinePair> lines = new List<LinePair>();
+        public List<LinePair> Lines { get { return lines; } }
+        public int LineCount { get { return lines.Count; } }
+        public int LineWidth { get; set; }
+        private int DieWidth { get; set; }
+        const int MinGap = 3;
+        const int MaxLineWidth = 300;
+        const int MinLineWidth = 10;
+
+        public int AssoPosBegin { get; set; }
+        public int AssoPosEnd { get; set; }
+        public bool NeedReAdd { get; private set; }
+        public void EnlargeRange()
+        {
+            if (AssoPosBegin <= MaxLineWidth)
+            {
+                AssoPosBegin += MaxLineWidth;
+                AssoPosEnd += MaxLineWidth;
+            }
+            else
+            {
+                AssoPosBegin -= MaxLineWidth;
+                AssoPosEnd -= MaxLineWidth;
+            }
+        }
+        public void Clear()
+        {
+            values.Clear();
+            lines.Clear();
+        }
+        public void SetInRange(int pos, int c)
+        {
+            if (c >= AssoPosBegin && c <= AssoPosEnd) 
+                values.Add(pos);
+        }
+        public void CondenseLines()
+        {
+            lines.Clear();
+            values.Sort();
+            int start = 0;
+            int width = 0;
+            bool UnqualifiedlineFound = false;//用來記錄是否超過臨界值的點都不夠連續
+
+            for (int i = 1; i < values.Count; i++)
+            {
+                if (values[i] - values[i - 1] > MinGap)
+                {
+                    if (values[i - 1] - values[start] > MinLineWidth)
+                    {
+                        Console.WriteLine(String.Format("Get Line [{0}-{1}]", values[start], values[i - 1]));
+                        LinePair p = new LinePair(values[start], values[i - 1]);
+                        lines.Add(p);
+
+                        width += p.Second - p.First;
+                    }
+                    else
+                    {
+                        Console.WriteLine(String.Format("Line width too Short [{0}-{1}]", values[start], values[i-1]));
+                        UnqualifiedlineFound = true;
+                    }
+                    start = i;
+                }
+                else
+                {
+                    //Console.WriteLine(String.Format("value[{0}].Pos={1}", i, values[i]));
+                }
+            }
+            if (lines.Count == 0)
+            {
+                Console.WriteLine(String.Format("No Gap between Points [{0}-{1}]", values[0], values[values.Count - 1]));
+                /*
+                  * start==0 && UnqualifiedlineFound
+                  * =>幾乎整條都超過threshold，設定單條line-
+                  * =>會在LineTooWide地判斷中淘汰
+                  * start>0
+                  * =>影像中只有一條切割道
+                  */
+                if (start > 0 || !UnqualifiedlineFound)
+                {
+                    LinePair p = new LinePair(values[start], values[values.Count - 1]);
+                    lines.Add(p);
+                    width = p.Second - p.First;
+                }
+            }
+            //將屬於同一個切割道的數條LINE合併
+            int cur = 0;
+            int width1 = 0;
+            while (cur < lines.Count - 1)
+            {
+                if ((lines[cur + 1].First - lines[cur].Second) < MaxLineWidth)
+                {
+                    LinePair p = lines[cur + 1];
+                    lines.RemoveAt(cur + 1);
+                    lines[cur].Merge(p);
+                }
+                else
+                {
+                    width1 += lines[cur].Second - lines[cur].First;
+                    cur++;
+                }
+            }
+            if (width1 > 0) width = width1;
+            LineWidth = (int)((float)width / lines.Count + 0.5);
+            if (lines.Count > 2)
+            {
+                DieWidth = (lines[lines.Count - 1].First - lines[0].Second - (lines.Count - 2) * LineWidth)
+                            / (lines.Count - 1);
+            }
+            else
+            {
+                DieWidth = lines.Count * 2;
+            }
+        }
+        private bool LineTooWide()
+        {
+            foreach (var v in lines)
+            {
+                if ((v.Second - v.First) > MaxLineWidth)
+                {
+                    Console.WriteLine("切割道寬度過大:" + (v.Second - v.First).ToString());
+                    NeedReAdd = true;
+                    return true;
+                }
+            }
+            NeedReAdd = false;
+            return false;
+        }
+        public bool Trim()
+        {
+            CondenseLines();
+            if (lines.Count == 0)
+            {
+                Console.WriteLine("找不到足夠寬度的切割道");
+                return false;
+            }
+            if (!LineTooWide())
+            {
+                Console.WriteLine("找到切割道；切割道寬度為：" + LineWidth.ToString());
+                return true;
+            }
+            Console.WriteLine("找到的切割道寬度過大或其他問題；切割道寬度為：" + LineWidth.ToString());
+            return false;
+        }
+        public void Adjust(ProjSorter s)
+        {
+            int cnt = 0;
+            int target = 0;
+            int th = MaxLineWidth * 3;
+
+            //移除本身多餘的線段
+            while (cnt < LineCount)
+            {
+                while (target < s.LineCount)
+                {
+                    if (Math.Abs(lines[cnt].Mid - s.Lines[target].Mid) < th)
+                    {
+                        lines[cnt].MappingTo = target;
+                        s.lines[target].MappingTo = cnt;
+                        break;
+                    }
+                    if (cnt < lines.Count - 1
+                        && s.Lines[target].Second > lines[cnt + 1].First) break;
+                    target++;
+                }
+                if (lines[cnt].MappingTo == -1) //Not Found
+                {
+                    lines.RemoveAt(cnt);
+                }
+                else
+                {
+                    target = lines[cnt].MappingTo;
+                    cnt++;
+                }
+            }
+            //移除s多餘的線段
+            cnt = 0;
+            while (cnt < s.LineCount)
+            {
+                if (s.Lines[cnt].MappingTo == -1)
+                {
+                    s.Lines.RemoveAt(cnt);
+                }
+                else
+                {
+                    cnt++;
+                }
+            }
+        }
+    }
+    class ProjValue
+    {
+        public int Pos { get; set; }
+        public bool HasValue { get; set; }
+        public ProjValue(int p)
+        {
+            HasValue = false;
+            Pos = p;
+        }
+    }
+    class LinePair
+    {
+        public int Mid { get; private set; }
+        public int MappingTo { get; set; }
+        public LinePair()
+        {
+            MappingTo = -1;
+        }
+        public LinePair(int first, int second)
+        {
+            First = first;
+            Second = second;
+            MappingTo = -1;
+            Mid = (First + Second) / 2;
+        }
+        public void Merge(LinePair p)
+        {
+            First = Math.Min(First, p.First);
+            Second = Math.Max(Second, p.Second);
+            Mid = (First + Second) / 2;
+        }
+        public int First { get; set; }
+        public int Second { get; set; }
     }
 }

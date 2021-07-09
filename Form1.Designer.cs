@@ -38,6 +38,8 @@
             this.OutlineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TargetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.regionMarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scribeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.equalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.laplaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,7 +66,7 @@
             this.pictureBox1.ContextMenuStrip = this.contextMenuStrip1;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(0, 28);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(1924, 851);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -87,12 +89,16 @@
             // 
             // menuStrip1
             // 
+            this.menuStrip1.AllowItemReorder = true;
+            this.menuStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Visible;
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.OpenToolStripMenuItem,
             this.OutlineToolStripMenuItem,
             this.TargetsToolStripMenuItem,
             this.FilterToolStripMenuItem,
+            this.regionMarkToolStripMenuItem,
+            this.scribeToolStripMenuItem,
             this.equalToolStripMenuItem,
             this.BinaryToolStripMenuItem,
             this.laplaceToolStripMenuItem});
@@ -112,15 +118,15 @@
             // OutlineToolStripMenuItem
             // 
             this.OutlineToolStripMenuItem.Name = "OutlineToolStripMenuItem";
-            this.OutlineToolStripMenuItem.Size = new System.Drawing.Size(74, 24);
-            this.OutlineToolStripMenuItem.Text = "Outline";
+            this.OutlineToolStripMenuItem.Size = new System.Drawing.Size(163, 24);
+            this.OutlineToolStripMenuItem.Text = "Outline(Connection)";
             this.OutlineToolStripMenuItem.Click += new System.EventHandler(this.OutlineToolStripMenuItem_Click);
             // 
             // TargetsToolStripMenuItem
             // 
             this.TargetsToolStripMenuItem.Name = "TargetsToolStripMenuItem";
-            this.TargetsToolStripMenuItem.Size = new System.Drawing.Size(75, 24);
-            this.TargetsToolStripMenuItem.Text = "Targets";
+            this.TargetsToolStripMenuItem.Size = new System.Drawing.Size(135, 24);
+            this.TargetsToolStripMenuItem.Text = "Targets(Region)";
             this.TargetsToolStripMenuItem.Click += new System.EventHandler(this.TargetsToolStripMenuItem_Click);
             // 
             // FilterToolStripMenuItem
@@ -129,6 +135,20 @@
             this.FilterToolStripMenuItem.Size = new System.Drawing.Size(58, 24);
             this.FilterToolStripMenuItem.Text = "Filter";
             this.FilterToolStripMenuItem.Click += new System.EventHandler(this.FilterToolStripMenuItem_Click);
+            // 
+            // regionMarkToolStripMenuItem
+            // 
+            this.regionMarkToolStripMenuItem.Name = "regionMarkToolStripMenuItem";
+            this.regionMarkToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.regionMarkToolStripMenuItem.Text = "Region(Mark)";
+            this.regionMarkToolStripMenuItem.Click += new System.EventHandler(this.regionMarkToolStripMenuItem_Click);
+            // 
+            // scribeToolStripMenuItem
+            // 
+            this.scribeToolStripMenuItem.Name = "scribeToolStripMenuItem";
+            this.scribeToolStripMenuItem.Size = new System.Drawing.Size(95, 24);
+            this.scribeToolStripMenuItem.Text = "ScribeLine";
+            this.scribeToolStripMenuItem.Click += new System.EventHandler(this.scribeToolStripMenuItem_Click);
             // 
             // equalToolStripMenuItem
             // 
@@ -155,17 +175,17 @@
             // 
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 15;
-            this.listBox1.Location = new System.Drawing.Point(559, 0);
-            this.listBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.listBox1.Location = new System.Drawing.Point(828, 0);
+            this.listBox1.Margin = new System.Windows.Forms.Padding(4);
             this.listBox1.Name = "listBox1";
             this.listBox1.ScrollAlwaysVisible = true;
-            this.listBox1.Size = new System.Drawing.Size(676, 34);
+            this.listBox1.Size = new System.Drawing.Size(407, 34);
             this.listBox1.TabIndex = 6;
             // 
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(1359, 2);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(39, 25);
             this.textBox1.TabIndex = 7;
@@ -176,7 +196,7 @@
             this.panel1.Controls.Add(this.radioButton2);
             this.panel1.Controls.Add(this.radioButton1);
             this.panel1.Location = new System.Drawing.Point(1501, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(140, 35);
             this.panel1.TabIndex = 8;
@@ -185,7 +205,7 @@
             // 
             this.radioButton2.AutoSize = true;
             this.radioButton2.Location = new System.Drawing.Point(71, 8);
-            this.radioButton2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioButton2.Margin = new System.Windows.Forms.Padding(4);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(58, 19);
             this.radioButton2.TabIndex = 1;
@@ -197,7 +217,7 @@
             // 
             this.radioButton1.AutoSize = true;
             this.radioButton1.Location = new System.Drawing.Point(0, 8);
-            this.radioButton1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioButton1.Margin = new System.Windows.Forms.Padding(4);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(58, 19);
             this.radioButton1.TabIndex = 0;
@@ -208,7 +228,7 @@
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(1728, 0);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(43, 25);
             this.textBox2.TabIndex = 9;
@@ -217,7 +237,7 @@
             // textBox3
             // 
             this.textBox3.Location = new System.Drawing.Point(1843, 0);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(4);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(47, 25);
             this.textBox3.TabIndex = 10;
@@ -283,7 +303,7 @@
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Get Targets";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -322,6 +342,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ToolStripMenuItem regionMarkToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scribeToolStripMenuItem;
     }
 }
 
