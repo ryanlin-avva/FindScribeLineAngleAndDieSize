@@ -114,7 +114,7 @@ namespace CsRGBshow
         #endregion
         #region OutlineToolStripMenuItem_Click
         //輪廓線
-        private void OutlineToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OutlineMenuItem_Click(object sender, EventArgs e)
         {
             //array_Outline = GetLine(array_Binary);
             array_Outline = GetScribeLine(f.array_Green);
@@ -147,19 +147,19 @@ namespace CsRGBshow
         {
             //Q:輪廓線陣列
             byte[,] Q = new byte[f.image_width, f.image_height];
-            int offset = int.Parse(textBox3.Text);
+            int offset = int.Parse(tbOffset.Text);
             for (int i = 1; i < f.image_width - 1; i++)
             {
                 for (int j = 1; j < f.image_height - 1; j++)
                 {
-                    if ((-offset < b[i - 1, j] - b[i, j] && b[i - 1, j] - b[i, j] < offset) &&
-                        (-offset < b[i + 1, j] - b[i, j] && b[i + 1, j] - b[i, j] < offset) &&
-                        (-offset < b[i, j - 1] - b[i, j] && b[i, j - 1] - b[i, j] < offset) &&
-                        (-offset < b[i, j + 1] - b[i, j] && b[i, j + 1] - b[i, j] < offset) &&
-                        (-offset < b[i - 1, j - 1] - b[i, j] && b[i - 1, j - 1] - b[i, j] < offset) &&
-                        (-offset < b[i - 1, j + 1] - b[i, j] && b[i - 1, j + 1] - b[i, j] < offset) &&
-                        (-offset < b[i + 1, j - 1] - b[i, j] && b[i + 1, j - 1] - b[i, j] < offset) &&
-                        (-offset < b[i + 1, j + 1] - b[i, j] && b[i + 1, j + 1] - b[i, j] < offset))
+                    if (Math.Abs(b[i - 1, j] - b[i, j]) < offset
+                        && Math.Abs(b[i - 1, j - 1] - b[i, j]) < offset
+                        && Math.Abs(b[i - 1, j + 1] - b[i, j]) < offset
+                        && Math.Abs(b[i, j - 1] - b[i, j]) < offset
+                        && Math.Abs(b[i, j + 1] - b[i, j]) < offset
+                        && Math.Abs(b[i + 1, j] - b[i, j]) < offset
+                        && Math.Abs(b[i + 1, j - 1] - b[i, j]) < offset
+                        && Math.Abs(b[i + 1, j + 1] - b[i, j]) < offset)
                     {
                         Q[i, j] = 1;
                     }
@@ -333,7 +333,6 @@ namespace CsRGBshow
                             }
                         }
                     } while (nc.Count > 0);//此輪搜尋有新發現輪廓點時繼續搜尋
-                    //if (Z[i - 1, j] == 1) continue;//排除白色區塊的負目標，起點左邊是黑點
                     G.width = G.xmx - G.xmn + 1;//寬度計算
                     G.height = G.ymx - G.ymn + 1;//高度計算
                     A.Add(G);//加入有效目標集合
@@ -1088,7 +1087,7 @@ namespace CsRGBshow
         }
         #endregion
 
-        private void regionMarkToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RegionMarkMenuItem_Click(object sender, EventArgs e)
         {
             ArrayList D = new ArrayList();
             C = getTargets(array_Outline); //建立目標物件集合
@@ -1112,21 +1111,23 @@ namespace CsRGBshow
             //繪製目標輪廓點
             Bitmap bmp = new Bitmap(f.image_width, f.image_height);
             pictureBox1.Image = bmp;
-            Color[] colors = { Color.Red, Color.Blue, Color.Green, Color.Brown, Color.Orange, Color.SkyBlue, Color.LightCoral };
-            int reg_cnt = 0;
+            Color[] colors = { Color.Red, Color.Blue, Color.Green
+                             , Color.Brown, Color.Orange, Color.SkyBlue
+                             , Color.LightCoral, Color.MediumPurple };
+            int color_idx = 0;
             for (int k = 0; k < C.Count; k++)
             {
                 TgInfo T = (TgInfo)C[k];
                 if (T.P.Count > 10000)
                 {
-                    if (reg_cnt >= colors.Length) reg_cnt = 0;
-                    Console.WriteLine("C[" + k.ToString() + "]=" + T.P.Count.ToString());
+                    if (color_idx >= colors.Length) color_idx = 0;
+                    Console.WriteLine("[RegionMark]:C[" + k.ToString() + "]=" + T.P.Count.ToString());
                     for (int m = 0; m < T.P.Count; m++)
                     {
                         System.Drawing.Point p = (System.Drawing.Point)T.P[m];
-                        bmp.SetPixel(p.X, p.Y, colors[reg_cnt]);
+                        bmp.SetPixel(p.X, p.Y, colors[color_idx]);
                     }
-                    reg_cnt++;
+                    color_idx++;
                 }
             }
             listBox1.Items.Add("物件數量" + C.Count.ToString());
