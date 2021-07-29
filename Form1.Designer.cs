@@ -39,7 +39,6 @@
             this.TargetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.regionMarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.scribeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.equalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.laplaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -98,7 +97,6 @@
             this.TargetsToolStripMenuItem,
             this.FilterToolStripMenuItem,
             this.regionMarkToolStripMenuItem,
-            this.scribeToolStripMenuItem,
             this.equalToolStripMenuItem,
             this.BinaryToolStripMenuItem,
             this.laplaceToolStripMenuItem});
@@ -142,13 +140,6 @@
             this.regionMarkToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
             this.regionMarkToolStripMenuItem.Text = "Region(Mark)";
             this.regionMarkToolStripMenuItem.Click += new System.EventHandler(this.regionMarkToolStripMenuItem_Click);
-            // 
-            // scribeToolStripMenuItem
-            // 
-            this.scribeToolStripMenuItem.Name = "scribeToolStripMenuItem";
-            this.scribeToolStripMenuItem.Size = new System.Drawing.Size(95, 24);
-            this.scribeToolStripMenuItem.Text = "ScribeLine";
-            this.scribeToolStripMenuItem.Click += new System.EventHandler(this.scribeToolStripMenuItem_Click);
             // 
             // equalToolStripMenuItem
             // 
@@ -343,7 +334,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripMenuItem regionMarkToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem scribeToolStripMenuItem;
     }
 }
 

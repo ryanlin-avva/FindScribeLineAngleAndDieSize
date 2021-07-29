@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Linq;
-
+using System.Drawing.Imaging;
+using CsGetTgs;
 
 namespace CsRGBshow
 {
@@ -385,11 +386,6 @@ namespace CsRGBshow
         //依據目標大小篩選目標       
         private void FilterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int top_x_add_all = 0;
-            int left_y_add_all = 0;
-            int right_y_add_all = 0;
-            int down_x_add_all = 0;
-            int counter = 0;
             List<List<Point>> Hor_Line = new List<List<Point>>();
             List<List<Point>> Ver_Line = new List<List<Point>>();
 
@@ -406,6 +402,10 @@ namespace CsRGBshow
                 T.right_point_list = new List<Point>();
                 T.top_point_list = new List<Point>();
                 T.down_point_list = new List<Point>();
+                T.left_point_list1 = new List<Point>();
+                T.right_point_list1 = new List<Point>();
+                T.top_point_list1 = new List<Point>();
+                T.down_point_list1 = new List<Point>();
                 T.left_centerpoint_list = new List<Point>();
                 T.right_centerpoint_list = new List<Point>();
                 T.top_centerpoint_list = new List<Point>();
@@ -436,219 +436,136 @@ namespace CsRGBshow
                     {
                         T.down_point_list.Add(p);
                     }
+                    if (p.X == 40 || p.X == 41)
+                    {
+                        T.left_point_list1.Add(p);
+                    }
+                    if (p.X == f.image_width - 41 || p.X == f.image_width - 42)
+                    {
+                        T.right_point_list1.Add(p);
+                    }
+                    if (p.Y == 40 || p.Y == 41)
+                    {
+                        T.top_point_list1.Add(p);
+                    }
+                    if (p.Y == f.image_height - 41 || p.Y == f.image_height - 42)
+                    {
+                        T.down_point_list1.Add(p);
+                    }
                 }
                 T.left_point_list = T.left_point_list.OrderBy(p => p.Y).ToList();
                 T.right_point_list = T.right_point_list.OrderBy(p => p.Y).ToList();
                 T.top_point_list = T.top_point_list.OrderBy(p => p.X).ToList();
                 T.down_point_list = T.down_point_list.OrderBy(p => p.X).ToList();
+                T.left_point_list1 = T.left_point_list1.OrderBy(p => p.Y).ToList();
+                T.right_point_list1 = T.right_point_list1.OrderBy(p => p.Y).ToList();
+                T.top_point_list1 = T.top_point_list1.OrderBy(p => p.X).ToList();
+                T.down_point_list1 = T.down_point_list1.OrderBy(p => p.X).ToList();
                 #endregion
-                #region 左右上下 center point list
-                #region 左 center point list
-                for (int l = 1; l < T.left_point_list.Count; l++)
-                {
-                    if (l == 1)
-                    {
-                        left_y_add_all = T.left_point_list[0].Y;
-                        counter = 1;
-                    }
-                    if ((T.left_point_list[l].Y - T.left_point_list[l - 1].Y) < 9)
-                    {
-                        left_y_add_all = left_y_add_all + T.left_point_list[l].Y;
-                        counter = counter + 1;
-                    }
-                    else
-                    {
-                        left_y_add_all = left_y_add_all / counter;
-                        T.left_centerpoint_list.Add(new Point(T.xmn, left_y_add_all));
-                        left_y_add_all = T.left_point_list[l].Y;
-                        counter = 1;
-                    }
-                    if (l == T.left_point_list.Count - 1)
-                    {
-                        left_y_add_all = left_y_add_all / counter;
-                        T.left_centerpoint_list.Add(new Point(T.xmn, left_y_add_all));
-                        left_y_add_all = 0;
-                        counter = 0;
-                    }
-                }
-                #endregion
-                #region 右 center point list
-                for (int l = 1; l < T.right_point_list.Count; l++)
-                {
-                    if (l == 1)
-                    {
-                        right_y_add_all = T.right_point_list[0].Y;
-                        counter = 1;
-                    }
-                    if ((T.right_point_list[l].Y - T.right_point_list[l - 1].Y) < 9)
-                    {
-                        right_y_add_all = right_y_add_all + T.right_point_list[l].Y;
-                        counter = counter + 1;
-                    }
-                    else
-                    {
-                        right_y_add_all = right_y_add_all / counter;
-
-                        T.right_centerpoint_list.Add(new Point(T.xmx, right_y_add_all));
-                        right_y_add_all = T.right_point_list[l].Y;
-                        counter = 1;
-                    }
-                    if (l == T.right_point_list.Count - 1)
-                    {
-                        right_y_add_all = right_y_add_all / counter;
-                        T.right_centerpoint_list.Add(new Point(T.xmx, right_y_add_all));
-                        right_y_add_all = 0;
-                        counter = 0;
-                    }
-                }
-                #endregion
-                #region 上 center point list
-                for (int l = 1; l < T.top_point_list.Count; l++)
-                {
-                    if (l == 1)
-                    {
-                        top_x_add_all = T.top_point_list[0].X;
-                        counter = 1;
-                    }
-                    if ((T.top_point_list[l].X - T.top_point_list[l - 1].X) < 9)
-                    {
-                        top_x_add_all = top_x_add_all + T.top_point_list[l].X;
-                        counter = counter + 1;
-                    }
-                    else
-                    {
-                        top_x_add_all = top_x_add_all / counter;
-                        T.top_centerpoint_list.Add(new Point(top_x_add_all, T.ymn));
-                        top_x_add_all = T.top_point_list[l].X;
-                        counter = 1;
-                    }
-                    if (l == T.top_point_list.Count - 1)
-                    {
-                        top_x_add_all = top_x_add_all / counter;
-                        T.top_centerpoint_list.Add(new Point(top_x_add_all, T.ymn));
-                        top_x_add_all = 0;
-                        counter = 0;
-                    }
-                }
-                #endregion
-                #region 下 center point list
-                for (int l = 1; l < T.down_point_list.Count; l++)
-                {
-                    if (l == 1)
-                    {
-                        down_x_add_all = T.down_point_list[0].X;
-                        counter = 1;
-                    }
-                    if ((T.down_point_list[l].X - T.down_point_list[l - 1].X) < 9)
-                    {
-                        down_x_add_all = down_x_add_all + T.down_point_list[l].X;
-                        counter = counter + 1;
-                    }
-                    else
-                    {
-
-                        down_x_add_all = down_x_add_all / counter;
-                        T.down_centerpoint_list.Add(new Point(down_x_add_all, T.ymx));
-                        down_x_add_all = T.down_point_list[l].X;
-                        counter = 1;
-                    }
-                    if (l == T.down_point_list.Count - 1)
-                    {
-                        down_x_add_all = down_x_add_all / counter;
-                        T.down_centerpoint_list.Add(new Point(down_x_add_all, T.ymx));
-                        down_x_add_all = 0;
-                        counter = 0;
-                    }
-                }
-                #endregion
-                #endregion
-                #region 刪除重複點
-                for (int i = T.left_centerpoint_list.Count - 1; i > 0; i--)
-                {
-                    if (T.left_centerpoint_list[i].Y == T.left_centerpoint_list[i - 1].Y)
-                        T.left_centerpoint_list.Remove(T.left_centerpoint_list[i]);
-                }
-                for (int i = T.right_centerpoint_list.Count - 1; i > 0; i--)
-                {
-                    if (T.right_centerpoint_list[i].Y == T.right_centerpoint_list[i - 1].Y)
-                        T.right_centerpoint_list.Remove(T.right_centerpoint_list[i]);
-                }
-                for (int i = T.top_centerpoint_list.Count - 1; i > 0; i--)
-                {
-                    if (T.top_centerpoint_list[i].X == T.top_centerpoint_list[i - 1].X)
-                        T.top_centerpoint_list.Remove(T.top_centerpoint_list[i]);
-                }
-                for (int i = T.down_centerpoint_list.Count - 1; i > 0; i--)
-                {
-                    if (T.down_centerpoint_list[i].X == T.down_centerpoint_list[i - 1].X)
-                        T.down_centerpoint_list.Remove(T.down_centerpoint_list[i]);
-                }
-                #endregion
-                //if ((T.left_point_list.Count * 1.2 <= T.top_point_list.Count || T.top_point_list.Count <= T.left_point_list.Count * 0.75 ||
-                //    T.right_point_list.Count * 1.2 <= T.top_point_list.Count || T.top_point_list.Count <= T.right_point_list.Count * 0.75 ||
-                //    T.down_point_list.Count * 1.2 <= T.top_point_list.Count || T.top_point_list.Count <= T.down_point_list.Count * 0.75) &&
-                //    (T.top_point_list.Count > 20) && (T.left_point_list.Count > 20) && (T.right_point_list.Count > 20) && (T.down_point_list.Count > 20)
-                //    )
-                //{
-                //    MessageBox.Show("切割道四邊長度不一致");
-                //    return;
-                //}
-
+                MyParser horParser = new MyParser();
+                //Horizontal
+                horParser.Build(T.left_point_list, 1, T.left_point_list1, 41
+                              , T.right_point_list, f.image_width - 1
+                              , T.right_point_list1, f.image_width - 42
+                              , true);
+                horParser.Select();
+                //Vertical
+                MyParser verParser = new MyParser();
+                verParser.Build(T.top_point_list, 1, T.top_point_list1, 41
+                              , T.down_point_list, f.image_height - 1
+                              , T.down_point_list1, f.image_height - 42
+                              , false);
+                verParser.Select();
 
                 #region 找水平與垂直線
                 #region 找水平線
-                for (int w = 0; w < T.left_centerpoint_list.Count; w++)
+                NodeList slist_h = horParser.SelectedStart;
+                NodeList elist_h = horParser.SelectedEnd;
+                FunBuilder fun_h = new FunBuilder(true);
+                for (int i=0; i< slist_h.Count; i++)
                 {
-                    for (int s = 0; s < T.right_centerpoint_list.Count; s++)
+                    for (int j=0; j< elist_h.Count; j++)
                     {
-                        List<Point> Point_Set = new List<Point>();
+                        Point start = new Point(slist_h.AssoicateCoor, slist_h.GetCenter(i));
+                        Point end = new Point(elist_h.AssoicateCoor, elist_h.GetCenter(j));
+                        fun_h.BuildLine(start, end);
                         int error_point = 0;
-                        for (int r = T.xmn; r < T.xmx + 1; r++)
+                        for (int r= slist_h.AssoicateCoor; r<= elist_h.AssoicateCoor; r++)
                         {
-                            Point p_H = new Point();
-                            p_H = Point.Round(GetHorizontalLineY(T.left_centerpoint_list[w], T.right_centerpoint_list[s], r));
-                            if (Tbin[r, p_H.Y] != 1)
-                            {
-                                //PointInLine = false;
-                                //break; 
-                                error_point = error_point + 1;
-                            }
+                            int y = (int)Math.Round(fun_h.GetAssociateValue(r));
+                            if (y >= Tbin.GetLength(1) || Tbin[r, y] != 1) error_point++;
                         }
                         if (error_point < f.minWidth)
                         {
-                            Point_Set.Add(T.left_centerpoint_list[w]);
-                            Point_Set.Add(T.right_centerpoint_list[s]);
+                            List<Point> Point_Set = new List<Point>();
+                            Point_Set.Add(start);
+                            Point_Set.Add(end);
                             Hor_Line.Add(Point_Set);
+                            break;
+                        }
+                    }
+                }
+                //修補缺漏的線
+                if (horParser.DieWidth > 0)
+                {
+                    int cnt = Hor_Line.Count;
+                    for (int i = 2; i < cnt; i++)
+                    {
+                        if ((Hor_Line[i][0].Y - Hor_Line[i - 1][0].Y) % horParser.DieWidth >= 1.8)
+                        {
+                            List<Point> Point_Set = new List<Point>();
+                            Point_Set.Add(new Point((Hor_Line[i][0].X - Hor_Line[i - 1][0].X) / 2, Hor_Line[i][0].Y));
+                            Point_Set.Add(new Point((Hor_Line[i][1].X - Hor_Line[i - 1][1].X) / 2, Hor_Line[i][1].Y));
+                            Hor_Line.Add(Point_Set);//Append to avoid affect original contents of list
                         }
                     }
                 }
                 #endregion
                 #region 找垂直線
-                for (int w = 0; w < T.top_centerpoint_list.Count; w++)
+                NodeList slist_v = verParser.SelectedStart;
+                NodeList elist_v = verParser.SelectedEnd;
+                FunBuilder fun_v = new FunBuilder(false);
+                for (int i = 0; i < slist_v.Count; i++)
                 {
-                    for (int s = 0; s < T.down_centerpoint_list.Count; s++)
+                    for (int j = 0; j < elist_v.Count; j++)
                     {
-                        List<Point> Point_Set = new List<Point>();
+                        Point start = new Point(slist_v.GetCenter(i), slist_v.AssoicateCoor);
+                        Point end = new Point(elist_v.GetCenter(j), elist_v.AssoicateCoor);
+                        fun_v.BuildLine(start, end);
+                        Console.WriteLine("Function for Point " + start.ToString()
+                                        + "," + end.ToString() + " = " + fun_v.ToString());
                         int error_point = 0;
-                        for (int r = T.ymn; r < T.ymx + 1; r++)
+                        for (int r = slist_v.AssoicateCoor; r <= elist_v.AssoicateCoor; r++)
                         {
-                            Point p_H = new Point();
-                            p_H = Point.Round(GetVerticalLineX(T.top_centerpoint_list[w], T.down_centerpoint_list[s], r));
-                            if (Tbin[p_H.X, r] != 1)
-                            {
-                                //PointInLine = false;
-                                //break;
-                                error_point = error_point + 1;
-                            }
+                            int x = (int)Math.Round(fun_v.GetAssociateValue(r));
+                            if (x >= Tbin.GetLength(0) || Tbin[x, r] != 1) error_point++;
                         }
                         if (error_point < f.minHeight)
                         {
-                            Point_Set.Add(T.top_centerpoint_list[w]);
-                            Point_Set.Add(T.down_centerpoint_list[s]);
+                            List<Point> Point_Set = new List<Point>();
+                            Point_Set.Add(start);
+                            Point_Set.Add(end);
                             Ver_Line.Add(Point_Set);
+                            break;
                         }
                     }
                 }
+                //修補缺漏的線
+                if (verParser.DieWidth > 0)
+                {
+                    int cnt = Ver_Line.Count;
+                    for (int i = 2; i < cnt; i++)
+                    {
+                        if ((Ver_Line[i][0].X - Ver_Line[i - 1][0].X) % verParser.DieWidth >= 1.8)
+                        {
+                            List<Point> Point_Set = new List<Point>();
+                            Point_Set.Add(new Point(Ver_Line[i][0].X, (Ver_Line[i][0].Y - Ver_Line[i - 1][0].Y) / 2));
+                            Point_Set.Add(new Point(Ver_Line[i][1].X, (Ver_Line[i][1].Y - Ver_Line[i - 1][1].Y) / 2));
+                            Ver_Line.Add(Point_Set);//Append to avoid affect original contents of list
+                        }
+                    }
+                }
+
                 #endregion
                 #endregion
                 #region 只找到垂直切割道
@@ -681,7 +598,7 @@ namespace CsRGBshow
                     Graphics g = Graphics.FromImage(bmp);
                     for (int i = 0; i < Ver_Line.Count; i++)
                     {
-                        g.DrawLine(new Pen(Color.Red), Ver_Line[i][0], Ver_Line[i][1]);
+                        g.DrawLine(new Pen(Color.Red, 5), Ver_Line[i][0], Ver_Line[i][1]);
                     }
                     pictureBox1.Image = bmp;
                     Mb = (Bitmap)bmp.Clone();
@@ -718,7 +635,7 @@ namespace CsRGBshow
                     Graphics g = Graphics.FromImage(bmp);
                     for (int i = 0; i < Hor_Line.Count; i++)
                     {
-                        g.DrawLine(new Pen(Color.Red), Hor_Line[i][0], Hor_Line[i][1]);
+                        g.DrawLine(new Pen(Color.LightBlue, 5), Hor_Line[i][0], Hor_Line[i][1]);
                     }
                     pictureBox1.Image = bmp;
                     Mb = (Bitmap)bmp.Clone();
@@ -787,7 +704,6 @@ namespace CsRGBshow
                     return;
                 }
                 #endregion
-
             }
         }
         #endregion
@@ -1131,6 +1047,7 @@ namespace CsRGBshow
             }
             listBox1.Items.Add("物件數量" + C.Count.ToString());
             pictureBox1.Image = bmp;
+            bmp.Save("c:/avva/test/region.bmp", ImageFormat.Bmp);
         }
         readonly int _left = 0;
         readonly int _right = 1;
@@ -1139,7 +1056,7 @@ namespace CsRGBshow
         readonly int boundary_num = 4;
         ProjSorter[] boundary;
 
-        private void scribeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ScribeMenuItem_Click(object sender, EventArgs e)
         {
             boundary = new ProjSorter[boundary_num];
             boundary[_left] = new ProjSorter(1, 3);
@@ -1205,6 +1122,7 @@ namespace CsRGBshow
             {
                 boundary[i].Clear();
             }
+
             for (int k = 0; k < C.Count; k++)
             {
                 TgInfo T = (TgInfo)C[k];
@@ -1213,12 +1131,17 @@ namespace CsRGBshow
                     Point p = (Point)T.P[m];
                     for (int i = 0; i < 2; i++)
                     {
-                        if (need_set[i]) boundary[i].SetInRange(p.Y, p.X);
-                        if (need_set[i + 2]) boundary[i + 2].SetInRange(p.X, p.Y);
+                        boundary[i].SetInRange(p.Y, p.X);
+                        boundary[i + 2].SetInRange(p.X, p.Y);
                     }
                 }
             }
 
+            for (int i = 0; i < boundary_num; i++)
+            {
+                boundary[i].SortValues();
+                Console.WriteLine(string.Format("boundary[{0}]={1}", i, boundary[i].ToString()));
+            }
         }
     }
 
@@ -1226,61 +1149,92 @@ namespace CsRGBshow
     {
         public ProjSorter(int begin, int end)
         {
-            AssoPosBegin = begin;
-            AssoPosEnd = end;
+            CondBegin = begin;
+            CondEnd = end;
+            NearZero = (CondBegin <= MaxLineWidth) ? true : false;
         }
-        List<int> values = new List<int>();
+        List<PosKeeper> values = new List<PosKeeper>();
         List<LinePair> lines = new List<LinePair>();
         public List<LinePair> Lines { get { return lines; } }
         public int LineCount { get { return lines.Count; } }
         public int LineWidth { get; set; }
         private int DieWidth { get; set; }
         const int MinGap = 3;
-        const int MaxLineWidth = 300;
-        const int MinLineWidth = 10;
+        const int MaxLineWidth = 80;
+        const int MinLineWidth = 5;
 
-        public int AssoPosBegin { get; set; }
-        public int AssoPosEnd { get; set; }
+        public int CondBegin { get; set; }
+        public int CondEnd { get; set; }
         public bool NeedReAdd { get; private set; }
+        public bool NearZero { get; set; }
         public void EnlargeRange()
         {
-            if (AssoPosBegin <= MaxLineWidth)
+            if (NearZero)
             {
-                AssoPosBegin += MaxLineWidth;
-                AssoPosEnd += MaxLineWidth;
+                CondBegin += MaxLineWidth;
+                CondEnd += MaxLineWidth;
             }
             else
             {
-                AssoPosBegin -= MaxLineWidth;
-                AssoPosEnd -= MaxLineWidth;
+                CondBegin -= MaxLineWidth;
+                CondEnd -= MaxLineWidth;
             }
+        }
+        public override string ToString()
+        {
+            string str = "";
+            for (int i=0; i<values.Count; i++)
+            {
+                str += values[i].Pos.ToString() + ",";
+                if (i % 10 == 0 && i != 0) str += "\n";
+            }
+            return str;
         }
         public void Clear()
         {
             values.Clear();
             lines.Clear();
         }
-        public void SetInRange(int pos, int c)
+        public void SetInRange(int pos, int cond)
         {
-            if (c >= AssoPosBegin && c <= AssoPosEnd) 
-                values.Add(pos);
+            if (cond >= CondBegin && cond <= CondEnd)
+            {
+                var t = values.Find(x => x.Pos == pos);
+                if (t == null)
+                {
+                    PosKeeper p = new PosKeeper(pos, cond);
+                    values.Add(p);
+                }
+                else
+                {
+                    if ((NearZero && cond < t.Cond)
+                        || (!NearZero && cond > t.Cond))
+                    {
+                        t.Pos = pos;
+                        t.Cond = cond;
+                    }
+                }
+            }
+        }
+        public void SortValues()
+        {
+            values.Sort(delegate (PosKeeper a, PosKeeper b) { return a.Pos.CompareTo(b.Pos); });
         }
         public void CondenseLines()
         {
             lines.Clear();
-            values.Sort();
             int start = 0;
             int width = 0;
             bool UnqualifiedlineFound = false;//用來記錄是否超過臨界值的點都不夠連續
 
             for (int i = 1; i < values.Count; i++)
             {
-                if (values[i] - values[i - 1] > MinGap)
+                if (values[i].Pos - values[i - 1].Pos > MinGap)
                 {
-                    if (values[i - 1] - values[start] > MinLineWidth)
+                    if (values[i - 1].Pos - values[start].Pos > MinLineWidth)
                     {
                         Console.WriteLine(String.Format("Get Line [{0}-{1}]", values[start], values[i - 1]));
-                        LinePair p = new LinePair(values[start], values[i - 1]);
+                        LinePair p = new LinePair(values[start].Pos, values[i - 1].Pos);
                         lines.Add(p);
 
                         width += p.Second - p.First;
@@ -1299,7 +1253,12 @@ namespace CsRGBshow
             }
             if (lines.Count == 0)
             {
-                Console.WriteLine(String.Format("No Gap between Points [{0}-{1}]", values[0], values[values.Count - 1]));
+                if (values.Count == 0)
+                {
+                    Console.WriteLine("No values left after condense");
+                    return;
+                }
+                Console.WriteLine(String.Format("No Gap between Points [{0}-{1}]", values[0].Pos, values[values.Count - 1].Pos));
                 /*
                   * start==0 && UnqualifiedlineFound
                   * =>幾乎整條都超過threshold，設定單條line-
@@ -1309,7 +1268,7 @@ namespace CsRGBshow
                   */
                 if (start > 0 || !UnqualifiedlineFound)
                 {
-                    LinePair p = new LinePair(values[start], values[values.Count - 1]);
+                    LinePair p = new LinePair(values[start].Pos, values[values.Count - 1].Pos);
                     lines.Add(p);
                     width = p.Second - p.First;
                 }
@@ -1452,5 +1411,15 @@ namespace CsRGBshow
         }
         public int First { get; set; }
         public int Second { get; set; }
+    }
+    class PosKeeper
+    {
+        public PosKeeper(int pos, int cond)
+        {
+            Pos = pos;
+            Cond = cond;
+        }
+        public int Pos { get; set; }
+        public int Cond { get; set; }
     }
 }

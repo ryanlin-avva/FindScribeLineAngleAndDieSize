@@ -188,6 +188,10 @@ namespace CsRGBshow
         public List<Point> top_point_list = null;
         public List<Point> right_point_list = null;
         public List<Point> down_point_list = null;
+        public List<Point> left_point_list1 = null;
+        public List<Point> top_point_list1 = null;
+        public List<Point> right_point_list1 = null;
+        public List<Point> down_point_list1 = null;
         public List<Point> left_centerpoint_list = null;
         public List<Point> top_centerpoint_list = null;
         public List<Point> right_centerpoint_list = null;
