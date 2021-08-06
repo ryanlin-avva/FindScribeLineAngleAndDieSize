@@ -38,6 +38,7 @@
             this.OutlineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TargetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.detailFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.regionMarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.equalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -96,6 +97,7 @@
             this.OutlineToolStripMenuItem,
             this.TargetsToolStripMenuItem,
             this.FilterToolStripMenuItem,
+            this.detailFilterToolStripMenuItem,
             this.regionMarkToolStripMenuItem,
             this.equalToolStripMenuItem,
             this.BinaryToolStripMenuItem,
@@ -134,6 +136,13 @@
             this.FilterToolStripMenuItem.Text = "Filter";
             this.FilterToolStripMenuItem.Click += new System.EventHandler(this.FilterToolStripMenuItem_Click);
             // 
+            // detailFilterToolStripMenuItem
+            // 
+            this.detailFilterToolStripMenuItem.Name = "detailFilterToolStripMenuItem";
+            this.detailFilterToolStripMenuItem.Size = new System.Drawing.Size(98, 24);
+            this.detailFilterToolStripMenuItem.Text = "DetailFilter";
+            this.detailFilterToolStripMenuItem.Click += new System.EventHandler(this.detailFilterToolStripMenuItem_Click);
+            // 
             // regionMarkToolStripMenuItem
             // 
             this.regionMarkToolStripMenuItem.Name = "regionMarkToolStripMenuItem";
@@ -166,11 +175,11 @@
             // 
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 15;
-            this.listBox1.Location = new System.Drawing.Point(828, 0);
+            this.listBox1.Location = new System.Drawing.Point(886, 0);
             this.listBox1.Margin = new System.Windows.Forms.Padding(4);
             this.listBox1.Name = "listBox1";
             this.listBox1.ScrollAlwaysVisible = true;
-            this.listBox1.Size = new System.Drawing.Size(407, 34);
+            this.listBox1.Size = new System.Drawing.Size(349, 34);
             this.listBox1.TabIndex = 6;
             // 
             // textBox1
@@ -334,6 +343,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripMenuItem regionMarkToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem detailFilterToolStripMenuItem;
     }
 }
 

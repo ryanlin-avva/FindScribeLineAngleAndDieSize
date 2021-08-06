@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace CsGetTgs
 {
@@ -7,7 +9,7 @@ namespace CsGetTgs
         bool isHor;
         float m = 0;
         float b = 0;
-
+        public double ThetaDegree { get; set; }
         public FunBuilder(bool hor)
         {
             isHor = hor;
@@ -23,14 +25,43 @@ namespace CsGetTgs
             /*
                y=mx+b             
             */
-            if (!isHor && Point2.X == Point1.X)
+            if (Point2.X == Point1.X)
             {
-                m = 1; b = -Point1.X;
-            } 
+                if (!isHor) //Vertical line
+                {
+                    m = 0; b = Point1.X;
+                    ThetaDegree = 90;
+                }
+                else
+                {
+                    MessageBox.Show("[CompLineCoeff]: Invalid Points for Horizontal Line Building "
+                                           + Point1.ToString() + Point2.ToString());
+                }
+            }
             else
             {
-                m = ((float)(Point2.Y - Point1.Y)) / ((float)(Point2.X - Point1.X));
-                b = Point1.Y - m * Point1.X;
+                if (Point2.Y == Point1.Y)
+                {
+                    if (isHor) //Horizontal line
+                    {
+                        m = 0; b = Point1.Y;
+                        ThetaDegree = 0;
+                    }
+                    else
+                    {
+                        MessageBox.Show("[CompLineCoeff]: Invalid Points for Vertical Line Building "
+                                               + Point1.ToString() + Point2.ToString());
+                    }
+                }
+                else
+                {
+                    m = ((float)(Point2.Y - Point1.Y)) / ((float)(Point2.X - Point1.X));
+                    b = Point1.Y - m * Point1.X;
+                    //使用-m來計算，因為影像中的Y軸是往下 (越下面，值越大)
+                    ThetaDegree = Math.Atan(-m) * 180.0 / Math.PI;
+                    if (!isHor)
+                        ThetaDegree = (ThetaDegree > 0) ? ThetaDegree - 90 : ThetaDegree + 90;
+                }
             }
         }
         public float GetAssociateValue(float f)
@@ -51,9 +82,9 @@ namespace CsGetTgs
             /*
                y=mx+b             
             */
-            if (float.IsInfinity(m))
+            if (m == 0)
             {
-                return -b/m;
+                return b;
             }
             return (y - b) / m;
         }

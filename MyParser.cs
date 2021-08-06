@@ -24,12 +24,13 @@ namespace CsGetTgs
                 lists[i].Clear();
             }
         }
-        public MyParser()
+        public MyParser(int scribe)
         {
-            for (int i=0; i<4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 lists[i] = new NodeList(i);
             }
+            ScribeWidth = scribe;
         }
         public void Select()
         {
@@ -96,25 +97,32 @@ namespace CsGetTgs
             DieWidth = (diecnt > 0) ? dieWidth / diecnt : 0;
             ScribeWidth = (scribecnt > 0) ? scribeWidth / scribecnt : 0;
         }
-        void BuildOne(List<Point>list, int no, int coor, bool isHor)
+        void BuildOne(List<Point> list, int no, int coor, bool isHor)
         {
             if (list.Count == 0) return;
             lists[no].AssoicateCoor = coor;
             int start = isHor ? list[0].Y : list[0].X;
             int prev = start;
-            int now = start; ;
-            for (int i=1; i<list.Count; i++)
+            int now = start;
+            int withLine = (int)(0.5 * ScribeWidth);
+            int widthLowerBound = (int)(0.4 * ScribeWidth);
+            int widthUpperBound = (int)(1.5 * ScribeWidth);
+            for (int i = 1; i < list.Count; i++)
             {
                 now = isHor ? list[i].Y : list[i].X;
-                if (now - prev < 7)
+                if (now - prev < withLine) //origin value:7
                 {
                     prev = now;
                     continue;
                 }
-                if (prev-start > 5) 
+                int w = prev - start;
+                if (w > widthLowerBound //origin value:5
+                    && w < widthUpperBound)
+                {
                     lists[no].Add(start, prev);
-                start = now;
-                prev = start;
+                    start = now;
+                }
+                prev = now;
             }
             lists[no].Add(start, now);
             lists[no].CompMin();

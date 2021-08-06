@@ -462,7 +462,7 @@ namespace CsRGBshow
                 T.top_point_list1 = T.top_point_list1.OrderBy(p => p.X).ToList();
                 T.down_point_list1 = T.down_point_list1.OrderBy(p => p.X).ToList();
                 #endregion
-                MyParser horParser = new MyParser();
+                MyParser horParser = new MyParser(40);
                 //Horizontal
                 horParser.Build(T.left_point_list, 1, T.left_point_list1, 41
                               , T.right_point_list, f.image_width - 1
@@ -470,7 +470,7 @@ namespace CsRGBshow
                               , true);
                 horParser.Select();
                 //Vertical
-                MyParser verParser = new MyParser();
+                MyParser verParser = new MyParser(40);
                 verParser.Build(T.top_point_list, 1, T.top_point_list1, 41
                               , T.down_point_list, f.image_height - 1
                               , T.down_point_list1, f.image_height - 42
@@ -1016,11 +1016,7 @@ namespace CsRGBshow
                 TgInfo T = (TgInfo)C[k];
                 if (T.height > f.maxHeight || T.width > f.maxWidth) D.Add(T);
             }
-            if (D.Count == 0)
-            {
-                MessageBox.Show("找不到符合長度的切割道");
-            }
-            else
+            if (D.Count > 0)
             {
                 C = D;
             }
@@ -1141,6 +1137,337 @@ namespace CsRGBshow
             {
                 boundary[i].SortValues();
                 Console.WriteLine(string.Format("boundary[{0}]={1}", i, boundary[i].ToString()));
+            }
+        }
+
+        private void detailFilterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form2 form2 = new Form2();
+            if (form2.ShowDialog() != DialogResult.OK) return;
+            int die_x = form2.DieX;
+            int die_y = form2.DieY;
+            int scribe = form2.Scribe;
+            DetailFilter(die_x, die_y, scribe);
+        }
+        private void DetailFilter(int die_x, int die_y, int scribe)
+        {
+            List<List<Point>> Hor_Line = new List<List<Point>>();
+            List<List<Point>> Ver_Line = new List<List<Point>>();
+            List<List<Point>> centerpoint_list = new List<List<Point>>();
+            List<float> angle_List = new List<float>();
+            Point centerpoint = new Point();
+            string show = null;
+            float angle_Average = 0;
+            listBox1.Items.Clear();
+            for (int k = 0; k < C.Count; k++)
+            {
+                TgInfo T = (TgInfo)C[k];
+                T.left_point_list = new List<Point>();
+                T.right_point_list = new List<Point>();
+                T.top_point_list = new List<Point>();
+                T.down_point_list = new List<Point>();
+                T.left_point_list1 = new List<Point>();
+                T.right_point_list1 = new List<Point>();
+                T.top_point_list1 = new List<Point>();
+                T.down_point_list1 = new List<Point>();
+                T.left_centerpoint_list = new List<Point>();
+                T.right_centerpoint_list = new List<Point>();
+                T.top_centerpoint_list = new List<Point>();
+                T.down_centerpoint_list = new List<Point>();
+
+                #region 輪廓點內補滿 
+                byte[,] Tbin = Fill(T.P);
+                //pictureBox1.Image = f.BWImg(Fill(T.P));//繪製二值化圖
+                //return;
+                #endregion
+                #region 找出左右上下點集合
+                for (int m = 0; m < T.P.Count; m++)
+                {
+                    Point p = (Point)T.P[m];
+                    if (p.X == 1 || p.X == 2)
+                    {
+                        T.left_point_list.Add(p);
+                    }
+                    if (p.X == f.image_width - 1 || p.X == f.image_width - 2)
+                    {
+                        T.right_point_list.Add(p);
+                    }
+                    if (p.Y == 1 || p.Y == 2)
+                    {
+                        T.top_point_list.Add(p);
+                    }
+                    if (p.Y == f.image_height - 1 || p.Y == f.image_height - 2)
+                    {
+                        T.down_point_list.Add(p);
+                    }
+                    if (p.X == 40 || p.X == 41)
+                    {
+                        T.left_point_list1.Add(p);
+                    }
+                    if (p.X == f.image_width - 41 || p.X == f.image_width - 42)
+                    {
+                        T.right_point_list1.Add(p);
+                    }
+                    if (p.Y == 40 || p.Y == 41)
+                    {
+                        T.top_point_list1.Add(p);
+                    }
+                    if (p.Y == f.image_height - 41 || p.Y == f.image_height - 42)
+                    {
+                        T.down_point_list1.Add(p);
+                    }
+                }
+                T.left_point_list = T.left_point_list.OrderBy(p => p.Y).ToList();
+                T.right_point_list = T.right_point_list.OrderBy(p => p.Y).ToList();
+                T.top_point_list = T.top_point_list.OrderBy(p => p.X).ToList();
+                T.down_point_list = T.down_point_list.OrderBy(p => p.X).ToList();
+                T.left_point_list1 = T.left_point_list1.OrderBy(p => p.Y).ToList();
+                T.right_point_list1 = T.right_point_list1.OrderBy(p => p.Y).ToList();
+                T.top_point_list1 = T.top_point_list1.OrderBy(p => p.X).ToList();
+                T.down_point_list1 = T.down_point_list1.OrderBy(p => p.X).ToList();
+                #endregion
+                MyParser horParser = new MyParser(scribe);
+                //Horizontal
+                horParser.Build(T.left_point_list, 1, T.left_point_list1, 41
+                              , T.right_point_list, f.image_width - 1
+                              , T.right_point_list1, f.image_width - 42
+                              , true);
+                horParser.Select();
+                //Vertical
+                MyParser verParser = new MyParser(scribe);
+                verParser.Build(T.top_point_list, 1, T.top_point_list1, 41
+                              , T.down_point_list, f.image_height - 1
+                              , T.down_point_list1, f.image_height - 42
+                              , false);
+                verParser.Select();
+
+                #region 找水平與垂直線
+                #region 找水平線
+                NodeList slist_h = horParser.SelectedStart;
+                NodeList elist_h = horParser.SelectedEnd;
+                FunBuilder fun_h = new FunBuilder(true);
+                for (int i = 0; i < slist_h.Count; i++)
+                {
+                    for (int j = 0; j < elist_h.Count; j++)
+                    {
+                        Point start = new Point(slist_h.AssoicateCoor, slist_h.GetCenter(i));
+                        Point end = new Point(elist_h.AssoicateCoor, elist_h.GetCenter(j));
+                        fun_h.BuildLine(start, end);
+                        int error_point = 0;
+                        for (int r = slist_h.AssoicateCoor; r <= elist_h.AssoicateCoor; r++)
+                        {
+                            int y = (int)Math.Round(fun_h.GetAssociateValue(r));
+                            if (y >= Tbin.GetLength(1) || Tbin[r, y] != 1) error_point++;
+                        }
+                        if (error_point < f.minWidth)
+                        {
+                            List<Point> Point_Set = new List<Point>();
+                            Point_Set.Add(start);
+                            Point_Set.Add(end);
+                            Hor_Line.Add(Point_Set);
+                            break;
+                        }
+                    }
+                }
+                //修補缺漏的線
+                if (horParser.DieWidth > 0)
+                {
+                    int cnt = Hor_Line.Count;
+                    for (int i = 2; i < cnt; i++)
+                    {
+                        if ((Hor_Line[i][0].Y - Hor_Line[i - 1][0].Y) % horParser.DieWidth >= 1.8)
+                        {
+                            List<Point> Point_Set = new List<Point>();
+                            Point_Set.Add(new Point((Hor_Line[i][0].X - Hor_Line[i - 1][0].X) / 2, Hor_Line[i][0].Y));
+                            Point_Set.Add(new Point((Hor_Line[i][1].X - Hor_Line[i - 1][1].X) / 2, Hor_Line[i][1].Y));
+                            Hor_Line.Add(Point_Set);//Append to avoid affect original contents of list
+                        }
+                    }
+                }
+                #endregion
+                #region 找垂直線
+                NodeList slist_v = verParser.SelectedStart;
+                NodeList elist_v = verParser.SelectedEnd;
+                FunBuilder fun_v = new FunBuilder(false);
+                for (int i = 0; i < slist_v.Count; i++)
+                {
+                    for (int j = 0; j < elist_v.Count; j++)
+                    {
+                        Point start = new Point(slist_v.GetCenter(i), slist_v.AssoicateCoor);
+                        Point end = new Point(elist_v.GetCenter(j), elist_v.AssoicateCoor);
+                        fun_v.BuildLine(start, end);
+                        Console.WriteLine("Function for Point " + start.ToString()
+                                        + "," + end.ToString() + " = " + fun_v.ToString());
+                        int error_point = 0;
+                        for (int r = slist_v.AssoicateCoor; r <= elist_v.AssoicateCoor; r++)
+                        {
+                            int x = (int)Math.Round(fun_v.GetAssociateValue(r));
+                            if (x >= Tbin.GetLength(0) || Tbin[x, r] != 1) error_point++;
+                        }
+                        if (error_point < f.minHeight)
+                        {
+                            List<Point> Point_Set = new List<Point>();
+                            Point_Set.Add(start);
+                            Point_Set.Add(end);
+                            Ver_Line.Add(Point_Set);
+                            break;
+                        }
+                    }
+                }
+                //修補缺漏的線
+                if (verParser.DieWidth > 0)
+                {
+                    int cnt = Ver_Line.Count;
+                    for (int i = 2; i < cnt; i++)
+                    {
+                        if ((Ver_Line[i][0].X - Ver_Line[i - 1][0].X) % verParser.DieWidth >= 1.8)
+                        {
+                            List<Point> Point_Set = new List<Point>();
+                            Point_Set.Add(new Point(Ver_Line[i][0].X, (Ver_Line[i][0].Y - Ver_Line[i - 1][0].Y) / 2));
+                            Point_Set.Add(new Point(Ver_Line[i][1].X, (Ver_Line[i][1].Y - Ver_Line[i - 1][1].Y) / 2));
+                            Ver_Line.Add(Point_Set);//Append to avoid affect original contents of list
+                        }
+                    }
+                }
+
+                #endregion
+                #endregion
+                #region 只找到垂直切割道
+                if (Ver_Line.Count != 0 && Hor_Line.Count == 0)
+                {
+                    for (int i = 0; i < Ver_Line.Count; i++)
+                    {
+                        angle_List.Add(Angle(Ver_Line[i][0], Ver_Line[i][1], new Point(Ver_Line[i][0].X, Ver_Line[i][0].Y + 1)));
+                    }
+                    listBox1.Items.Clear();
+                    listBox1.Items.Add("只找到垂直切割道共" + Ver_Line.Count.ToString() + "條");
+                    for (int i = 0; i < angle_List.Count; i++)
+                    {
+                        show = "垂直線" + ((i + 1).ToString()) + "角度=" + angle_List[i].ToString() + "上=" + Ver_Line[i][0].ToString() + "下=" + Ver_Line[i][1].ToString();
+                        listBox1.Items.Add(show);
+                        angle_Average = angle_Average + angle_List[i];
+                    }
+                    angle_Average = angle_Average / angle_List.Count;
+                    show = "平均角度=" + angle_Average.ToString();
+                    listBox1.Items.Add(show);
+
+                    //繪製有效目標
+                    Bitmap bmp = new Bitmap(f.image_width, f.image_height);
+                    for (int m = 0; m < T.P.Count; m++)
+                    {
+                        Point p = (Point)T.P[m];
+                        bmp.SetPixel(p.X, p.Y, Color.Black);
+                    }
+                    // Draw a line between the points.
+                    Graphics g = Graphics.FromImage(bmp);
+                    for (int i = 0; i < Ver_Line.Count; i++)
+                    {
+                        g.DrawLine(new Pen(Color.Red, 5), Ver_Line[i][0], Ver_Line[i][1]);
+                    }
+                    pictureBox1.Image = bmp;
+                    Mb = (Bitmap)bmp.Clone();
+                    return;
+                }
+                #endregion
+                #region 只找到水平切割道
+                if (Ver_Line.Count == 0 && Hor_Line.Count != 0)
+                {
+                    for (int i = 0; i < Hor_Line.Count; i++)
+                    {
+                        angle_List.Add(Angle(Hor_Line[i][0], Hor_Line[i][1], new Point(Hor_Line[i][0].X + 1, Hor_Line[i][0].Y)));
+                    }
+                    listBox1.Items.Clear();
+                    listBox1.Items.Add("只找到水平切割道" + Hor_Line.Count.ToString() + "條");
+                    for (int i = 0; i < angle_List.Count; i++)
+                    {
+                        show = "水平線" + ((i + 1).ToString()) + "角度=" + angle_List[i].ToString() + "上=" + Hor_Line[i][0].ToString() + "下=" + Hor_Line[i][1].ToString();
+                        listBox1.Items.Add(show);
+                        angle_Average = angle_Average + angle_List[i];
+                    }
+                    angle_Average = angle_Average / angle_List.Count;
+                    show = "平均角度=" + angle_Average.ToString();
+                    listBox1.Items.Add(show);
+
+                    //繪製有效目標
+                    Bitmap bmp = new Bitmap(f.image_width, f.image_height);
+                    for (int m = 0; m < T.P.Count; m++)
+                    {
+                        Point p = (Point)T.P[m];
+                        bmp.SetPixel(p.X, p.Y, Color.Black);
+                    }
+                    // Draw a line between the points.
+                    Graphics g = Graphics.FromImage(bmp);
+                    for (int i = 0; i < Hor_Line.Count; i++)
+                    {
+                        g.DrawLine(new Pen(Color.LightBlue, 5), Hor_Line[i][0], Hor_Line[i][1]);
+                    }
+                    pictureBox1.Image = bmp;
+                    Mb = (Bitmap)bmp.Clone();
+                    return;
+                }
+                #endregion
+                if (Ver_Line.Count == 0 && Hor_Line.Count == 0)
+                {
+                    MessageBox.Show("找不到水平或垂直切割道");
+                    return;
+                }
+                #region 找直線交點
+                if (Ver_Line.Count > 0 && Hor_Line.Count > 0)
+                {
+                    for (int h = 0; h < Hor_Line.Count; h++)
+                    {
+                        for (int s = 0; s < Ver_Line.Count; s++)
+                        {
+                            List<Point> centerPoint_Set = new List<Point>();
+                            centerpoint = Point.Round(GetIntersection(Hor_Line[h][0], Hor_Line[h][1], Ver_Line[s][0], Ver_Line[s][1]));
+                            angle_List.Add(Angle(centerpoint, Hor_Line[h][1], new Point(centerpoint.X + 1, centerpoint.Y)));
+                            centerPoint_Set.Add(centerpoint);
+                            centerPoint_Set.Add(Hor_Line[h][0]);
+                            centerPoint_Set.Add(Hor_Line[h][1]);
+                            centerPoint_Set.Add(Ver_Line[s][0]);
+                            centerPoint_Set.Add(Ver_Line[s][1]);
+                            centerpoint_list.Add(centerPoint_Set);
+                        }
+                    }
+                    listBox1.Items.Clear();
+                    listBox1.Items.Add("找到交點共" + centerpoint_list.Count.ToString() + "點");
+                    for (int i = 0; i < angle_List.Count; i++)
+                    {
+                        show = "點" + ((i + 1).ToString()) + "角度=" + angle_List[i].ToString() + "中=" + centerpoint_list[i][0].ToString() + "左=" + centerpoint_list[i][1].ToString() + "右=" + centerpoint_list[i][2].ToString() + "上=" + centerpoint_list[i][3].ToString() + "下=" + centerpoint_list[i][4].ToString();
+                        listBox1.Items.Add(show);
+                        angle_Average = angle_Average + angle_List[i];
+                    }
+                    angle_Average = angle_Average / angle_List.Count;
+                    show = "平均角度=" + angle_Average.ToString();
+                    listBox1.Items.Add(show);
+
+                    show = "Width=" + FindDieSize(centerpoint_list, Hor_Line.Count, Ver_Line.Count, 440, 400)[0].ToString();
+                    listBox1.Items.Add(show);
+                    show = "Height=" + FindDieSize(centerpoint_list, Hor_Line.Count, Ver_Line.Count, 440, 400)[1].ToString();
+                    show = "距離中心最近點X距離=" + GetNearestIntersectPointToCenterDistance(centerpoint_list)[0].ToString()
+                        + ",Y距離=" + GetNearestIntersectPointToCenterDistance(centerpoint_list)[1].ToString();
+                    listBox1.Items.Add(show);
+                    //繪製有效目標
+                    Bitmap bmp = new Bitmap(f.image_width, f.image_height);
+                    for (int m = 0; m < T.P.Count; m++)
+                    {
+                        Point p = (Point)T.P[m];
+                        bmp.SetPixel(p.X, p.Y, Color.Black);
+                    }
+                    // Draw a line between the points.
+                    Graphics g = Graphics.FromImage(bmp);
+                    for (int i = 0; i < centerpoint_list.Count; i++)
+                    {
+                        g.DrawLine(new Pen(Color.Yellow, 5), centerpoint_list[i][0], new Point(centerpoint_list[i][0].X + 20, centerpoint_list[i][0].Y));
+                        g.DrawLine(new Pen(Color.Yellow, 5), centerpoint_list[i][0], new Point(centerpoint_list[i][0].X - 20, centerpoint_list[i][0].Y));
+                        g.DrawLine(new Pen(Color.Yellow, 5), centerpoint_list[i][0], new Point(centerpoint_list[i][0].X, centerpoint_list[i][0].Y + 20));
+                        g.DrawLine(new Pen(Color.Yellow, 5), centerpoint_list[i][0], new Point(centerpoint_list[i][0].X, centerpoint_list[i][0].Y - 20));
+                    }
+                    pictureBox1.Image = bmp;
+                    Mb = (Bitmap)bmp.Clone();
+                    return;
+                }
+                #endregion
             }
         }
     }
