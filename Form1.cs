@@ -1181,6 +1181,7 @@ namespace CsRGBshow
                 //return;
                 #endregion
                 #region 找出左右上下點集合
+                int second_line = 3 * scribe;
                 for (int m = 0; m < T.P.Count; m++)
                 {
                     Point p = (Point)T.P[m];
@@ -1200,19 +1201,19 @@ namespace CsRGBshow
                     {
                         T.down_point_list.Add(p);
                     }
-                    if (p.X == 40 || p.X == 41)
+                    if (p.X == second_line || p.X == second_line)
                     {
                         T.left_point_list1.Add(p);
                     }
-                    if (p.X == f.image_width - 41 || p.X == f.image_width - 42)
+                    if (p.X == f.image_width - second_line || p.X == f.image_width - second_line-1)
                     {
                         T.right_point_list1.Add(p);
                     }
-                    if (p.Y == 40 || p.Y == 41)
+                    if (p.Y == second_line || p.Y == second_line)
                     {
                         T.top_point_list1.Add(p);
                     }
-                    if (p.Y == f.image_height - 41 || p.Y == f.image_height - 42)
+                    if (p.Y == f.image_height - second_line || p.Y == f.image_height - second_line-1)
                     {
                         T.down_point_list1.Add(p);
                     }
@@ -1228,16 +1229,16 @@ namespace CsRGBshow
                 #endregion
                 MyParser horParser = new MyParser(scribe);
                 //Horizontal
-                horParser.Build(T.left_point_list, 1, T.left_point_list1, 41
+                horParser.Build(T.left_point_list, 1, T.left_point_list1, second_line
                               , T.right_point_list, f.image_width - 1
-                              , T.right_point_list1, f.image_width - 42
+                              , T.right_point_list1, f.image_width - second_line-1
                               , true);
                 horParser.Select();
                 //Vertical
                 MyParser verParser = new MyParser(scribe);
-                verParser.Build(T.top_point_list, 1, T.top_point_list1, 41
+                verParser.Build(T.top_point_list, 1, T.top_point_list1, second_line
                               , T.down_point_list, f.image_height - 1
-                              , T.down_point_list1, f.image_height - 42
+                              , T.down_point_list1, f.image_height - second_line-1
                               , false);
                 verParser.Select();
 
@@ -1253,6 +1254,8 @@ namespace CsRGBshow
                         Point start = new Point(slist_h.AssoicateCoor, slist_h.GetCenter(i));
                         Point end = new Point(elist_h.AssoicateCoor, elist_h.GetCenter(j));
                         fun_h.BuildLine(start, end);
+                        Console.WriteLine("Function for Point " + start.ToString()
+                                        + "," + end.ToString() + " = " + fun_h.ToString());
                         int error_point = 0;
                         for (int r = slist_h.AssoicateCoor; r <= elist_h.AssoicateCoor; r++)
                         {
@@ -1265,6 +1268,7 @@ namespace CsRGBshow
                             Point_Set.Add(start);
                             Point_Set.Add(end);
                             Hor_Line.Add(Point_Set);
+                            Console.WriteLine("This Hor Line Selected");
                             break;
                         }
                     }
@@ -1310,6 +1314,7 @@ namespace CsRGBshow
                             Point_Set.Add(start);
                             Point_Set.Add(end);
                             Ver_Line.Add(Point_Set);
+                            Console.WriteLine("This Ver Line Selected");
                             break;
                         }
                     }
