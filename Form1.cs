@@ -254,36 +254,30 @@ namespace CsRGBshow
                 if (T.height > f.maxHeight && T.width < f.minWidth) D.Add(T);
                 if (T.height < f.minHeight && T.width > f.maxWidth) D.Add(T);
             }
-            
-            C = D;
-            //依長寬排序
-            for (int i = 0; i < 10; i++)
-            {
-                for (int j = i + 1; j < C.Count; j++)
-                {
-                    TgInfo T = (TgInfo)C[i], G = (TgInfo)C[j];
-                    if (T.width + T.height < G.width + G.height)
-                    {
-                        C[i] = G; C[j] = T;
-                    }
-                }
-            }
+
             if (C.Count == 0)
             {
                 MessageBox.Show("找不到切割道交點");
                 return;
             }
+            C = D;
+            //依長寬排序
+            TgInfo Tg = (TgInfo)C[0];
+            for (int i = 1; i < C.Count; i++)
+            {
+                TgInfo G = (TgInfo)C[i];
+                if (Tg.width + Tg.height < G.width + G.height)
+                {
+                    Tg = (TgInfo)C[i];
+                }
+            }
             #endregion
             //繪製目標輪廓點
             Bitmap bmp = new Bitmap(f.image_width, f.image_height);
-            for (int k = 0; k < C.Count; k++)
+            for (int m = 0; m < Tg.P.Count; m++)
             {
-                TgInfo T = (TgInfo)C[k];
-                for (int m = 0; m < T.P.Count; m++)
-                {
-                    Point p = (Point)T.P[m];
-                    bmp.SetPixel(p.X, p.Y, Color.Black);
-                }
+                Point p = (Point)Tg.P[m];
+                bmp.SetPixel(p.X, p.Y, Color.Black);
             }
             listBox1.Items.Add("物件數量" + C.Count.ToString());
             pictureBox1.Image = bmp;
