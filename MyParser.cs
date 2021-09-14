@@ -120,8 +120,8 @@ namespace CsGetTgs
                     && w < widthUpperBound)
                 {
                     lists[no].Add(start, prev);
-                    start = now;
                 }
+                start = now;
                 prev = now;
             }
             lists[no].Add(start, now);
